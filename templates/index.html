@@ -1,482 +1,1088 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sports AI Analysis</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      /* General Reset & Variables */
-      :root {
-        --bg-gradient-start: #f8f8fa;
-        --bg-gradient-end: #eae9f2;
-        --main-bg-color: #fcfcfc;
-        --text-primary: #1a1a2e;
-        --text-secondary: #6b7280;
-        --card-purple: #e0d9fc;
-        --card-yellow: #fdf2d1;
-        --card-dark: #2c2c36;
-        --accent-blue: #0a84ff;
-        --border-color: #e8e8ed;
-        --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.05);
-        --shadow-medium: 0 4px 15px rgba(0, 0, 0, 0.08);
-        --border-radius-lg: 20px;
-        --border-radius-md: 14px;
-      }
 
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sports AI Analysis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0a84ff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="CodeStar">
+  <link rel="apple-touch-icon"
+    href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iNDAiIGZpbGw9IiMwQTg0RkYiLz4KPHN2ZyB4PSI0OCIgeT0iNDgiIHdpZHRoPSI5NiIgaGVpZ2h0PSI5NiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIj4KPHN0YXIgY3g9IjEyIiBjeT0iMTIiIHI9IjgiIGZpbGw9IndoaXRlIi8+CjwvZz4KPC9zdmc+">
+  <style>
+    /* General Reset & Variables */
+    :root {
+      --bg-gradient-start: #f8f8fa;
+      --bg-gradient-end: #eae9f2;
+      --main-bg-color: #fcfcfc;
+      --text-primary: #1a1a2e;
+      --text-secondary: #6b7280;
+      --card-purple: #e0d9fc;
+      --card-yellow: #fdf2d1;
+      --card-dark: #2c2c36;
+      --accent-blue: #0a84ff;
+      --border-color: #e8e8ed;
+      --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.05);
+      --shadow-medium: 0 10px 25px rgba(0, 0, 0, 0.1);
+      --border-radius-lg: 20px;
+      --border-radius-md: 14px;
+    }
 
-      body {
-        font-family: "Inter", sans-serif;
-        background: linear-gradient(
-          135deg,
+    /* Dark Mode Color Palette */
+    body.dark-mode {
+      --bg-gradient-start: #1a1a2e;
+      --bg-gradient-end: #121217;
+      --main-bg-color: #23232e;
+      --text-primary: #f0f0f5;
+      --text-secondary: #a0a0b0;
+      --card-purple: #3a325c;
+      --card-yellow: #5a4f31;
+      --card-dark: #31313f;
+      --border-color: #444452;
+      --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.2);
+      --shadow-medium: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Inter", sans-serif;
+      background: linear-gradient(135deg,
           var(--bg-gradient-start),
-          var(--bg-gradient-end)
-        );
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        padding: 1rem;
-        color: var(--text-primary);
+          var(--bg-gradient-end));
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      color: var(--text-primary);
+      overflow: hidden;
+    }
+
+    .auth-container,
+    .app-container {
+      width: 100%;
+      max-width: 420px;
+      background-color: var(--main-bg-color);
+      border-radius: 40px;
+      box-shadow: var(--shadow-medium);
+      padding: 2.5rem 2rem;
+    }
+
+    .app-container {
+      padding: 0;
+      height: 100%;
+      max-height: 896px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .auth-form h2 {
+      font-size: 2em;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .profile-pic-uploader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .profile-pic-uploader img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--border-color);
+    }
+
+    .profile-pic-uploader .upload-label {
+      padding: 0.5rem 1rem;
+      background-color: #f0f0f5;
+      border-radius: var(--border-radius-md);
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.9em;
+      transition: background-color 0.2s ease;
+    }
+
+    body.dark-mode .profile-pic-uploader .upload-label {
+      background-color: var(--card-dark);
+    }
+
+    .profile-pic-uploader .upload-label:hover {
+      background-color: #e8e8ed;
+    }
+
+    body.dark-mode .profile-pic-uploader .upload-label:hover {
+      background-color: #444;
+    }
+
+    .auth-form .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .action-button {
+      width: 100%;
+      padding: 1rem;
+      background-color: var(--accent-blue);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius-md);
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .action-button:hover {
+      background-color: #0077e6;
+    }
+
+    .auth-switch-link {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: var(--text-secondary);
+    }
+
+    .auth-switch-link a {
+      color: var(--accent-blue);
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .auth-switch-link a:hover {
+      text-decoration: underline;
+    }
+
+    .form-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 1.5rem 0.5rem;
+      /* background-color: grey; */
+    }
+
+    .top-bar .back-btn {
+      font-size: 1.5em;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text-secondary);
+      width: 40px;
+      text-align: left;
+    }
+
+    .app-logo {
+      font-weight: 600;
+      font-size: 1.9em;
+      color: #0a84ff;
+      /* text-align: center; */
+      flex-grow: 1;
+    }
+
+    .user-avatar {
+      width: 40px;
+      text-align: right;
+    }
+
+    .user-avatar img {
+      cursor: pointer;
+      border: 2px solid rgb(18, 227, 18);
+      width: 40px;
+      height: 40px;
+      padding: 1px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: var(--shadow-light);
+    }
+
+    .content-area {
+      padding: 0 1.5rem 1.5rem;
+      flex-grow: 1;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+
+    .content-area::-webkit-scrollbar {
+      display: none;
+    }
+
+    .greeting {
+      margin-bottom: 1.5rem;
+      padding-top: 1rem;
+    }
+
+    .greeting h1 {
+      font-size: 2.2em;
+      font-weight: 800;
+    }
+
+    .section {
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+      font-size: 1.2em;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    #profileSection {
+      padding-top: 1rem;
+    }
+
+    .profile-details {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .profile-details img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 4px solid white;
+      box-shadow: var(--shadow-medium);
+      object-fit: cover;
+      margin-bottom: 1rem;
+    }
+
+    .profile-details h2 {
+      font-size: 1.5em;
+      font-weight: 700;
+    }
+
+    .profile-details p {
+      color: var(--text-secondary);
+      font-size: 0.95em;
+    }
+
+    .settings-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1rem;
+      background-color: #f7f7f7;
+      border-radius: var(--border-radius-md);
+      margin-bottom: 2rem;
+    }
+
+    body.dark-mode .settings-wrapper {
+      background-color: #31313f;
+    }
+
+    .setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .setting-item label {
+      font-weight: 600;
+    }
+
+    .theme-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 28px;
+    }
+
+    .theme-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: 0.4s;
+    }
+
+    input:checked+.slider {
+      background-color: var(--accent-blue);
+    }
+
+    input:checked+.slider:before {
+      transform: translateX(22px);
+    }
+
+    .slider.round {
+      border-radius: 34px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
+
+    .language-switcher select {
+      padding: 0.4rem 0.6rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background-color: var(--main-bg-color);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-weight: 500;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      background-color: #f7f7f7;
+      border-radius: var(--border-radius-md);
+      margin-bottom: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    body.dark-mode .history-item {
+      background-color: #31313f;
+    }
+
+    .history-item:hover {
+      background-color: #e8e8ed;
+    }
+
+    body.dark-mode .history-item:hover {
+      background-color: #444;
+    }
+
+    .history-item-info {
+      flex-grow: 1;
+    }
+
+    .history-item-info h3 {
+      font-weight: 600;
+      font-size: 1em;
+    }
+
+    .history-item-info p {
+      font-size: 0.85em;
+      color: var(--text-secondary);
+      text-transform: capitalize;
+    }
+
+    .history-item-score {
+      font-size: 1.5em;
+      font-weight: 700;
+      color: var(--accent-blue);
+    }
+
+    .history-item-delete-btn {
+      font-size: 1.2em;
+      margin-left: 1rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: color 0.2s ease;
+      z-index: 2;
+    }
+
+    .history-item-delete-btn:hover {
+      color: #e5484d;
+    }
+
+    #editProfileBtn {
+      background-color: var(--text-secondary);
+    }
+
+    #editProfileBtn:hover {
+      background-color: #555;
+    }
+
+    #logoutBtn {
+      background-color: #e5484d;
+    }
+
+    #logoutBtn:hover {
+      background-color: #c4353a;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-md);
+      font-size: 0.95em;
+      font-family: "Inter", sans-serif;
+      background-color: #f7f7f7;
+      transition: all 0.2s ease;
+    }
+
+    body.dark-mode .form-control {
+      background-color: #31313f;
+      border-color: #444;
+      color: var(--text-primary);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.1);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin-bottom: -.5rem;
+    }
+
+    .card {
+      padding: 1.2rem;
+      border-radius: var(--border-radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      text-align: left;
+    }
+
+    .card.purple {
+      background-color: var(--card-purple);
+    }
+
+    .card.dark {
+      background-color: var(--card-dark);
+      color: white;
+    }
+
+    .score-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .score-card {
+      background-color: #f0f0f5;
+      padding: 1rem;
+      border-radius: var(--border-radius-md);
+      text-align: center;
+    }
+
+    body.dark-mode .score-card {
+      background-color: #31313f;
+    }
+
+    .score-card.overall-score {
+      background-color: var(--accent-blue);
+      color: white;
+    }
+
+    .score-card .score-value {
+      font-size: 1.8em;
+      font-weight: 700;
+    }
+
+    .score-card .score-label {
+      font-size: 0.85em;
+      opacity: 0.8;
+    }
+
+    #recommendationsList p {
+      background-color: #f0f0f5;
+      padding: 0.8rem 1rem;
+      border-radius: var(--border-radius-md);
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    body.dark-mode #recommendationsList p {
+      background-color: #31313f;
+    }
+
+    .loader-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      color: white;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid white;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
       }
 
-      /* App Container */
-      .app-container {
-        width: 100%;
-        max-width: 420px;
-        background-color: var(--main-bg-color);
-        border-radius: 40px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .modal-content {
+      background-color: var(--main-bg-color);
+      padding: 2rem;
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-medium);
+      text-align: center;
+      max-width: 320px;
+    }
+
+    .modal-content h3 {
+      margin-bottom: 1rem;
+      font-size: 1.2em;
+    }
+
+    .modal-content p {
+      margin-bottom: 1.5rem;
+      color: var(--text-secondary);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .modal-actions.single-button {
+      justify-content: center;
+    }
+
+    .modal-actions .action-button {
+      font-size: 1em;
+    }
+
+    .modal-actions .cancel-btn {
+      background-color: var(--text-secondary);
+    }
+
+    .modal-actions .confirm-btn {
+      background-color: #e5484d;
+    }
+
+    /* Tutorial Styles */
+    .tutorial-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 3000;
+    }
+
+    .tutorial-content {
+      background-color: var(--main-bg-color);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-medium);
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow: hidden;
+    }
+
+    .tutorial-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .tutorial-header h3 {
+      margin: 0;
+      font-size: 1.3em;
+      font-weight: 700;
+    }
+
+    .tutorial-close {
+      background: none;
+      border: none;
+      font-size: 1.5em;
+      cursor: pointer;
+      color: var(--text-secondary);
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background-color 0.2s;
+    }
+
+    .tutorial-close:hover {
+      background-color: var(--border-color);
+    }
+
+    .tutorial-body {
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .tutorial-step img {
+      width: 100%;
+      max-width: 300px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: var(--border-radius-md);
+      margin-bottom: 1rem;
+    }
+
+    .tutorial-step p {
+      font-size: 1.1em;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    .tutorial-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .tutorial-navigation {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .tutorial-btn {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: var(--border-radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tutorial-btn.primary {
+      background-color: var(--accent-blue);
+      color: white;
+    }
+
+    .tutorial-btn.secondary {
+      background-color: var(--text-secondary);
+      color: white;
+    }
+
+    .tutorial-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .tutorial-progress {
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+
+
+    /* Accessibility Improvements */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* Focus indicators for keyboard navigation */
+    button:focus,
+    input:focus,
+    select:focus {
+      outline: 2px solid var(--accent-blue);
+      outline-offset: 2px;
+    }
+
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+      :root {
+        --border-color: #000;
+        --text-secondary: #000;
       }
 
-      /* Top Bar/Header */
-      .top-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1.5rem 1.5rem 0.5rem;
+      body.dark-mode {
+        --border-color: #fff;
+        --text-secondary: #fff;
       }
-      .app-logo {
-        font-weight: 600;
-        font-size: 1.1em;
-      }
-      .user-avatar img {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        object-fit: cover;
-        box-shadow: var(--shadow-light);
-      }
+    }
 
-      /* Main Content Area */
-      .content-area {
-        padding: 0 1.5rem 1.5rem;
-      }
+    /* Reduced motion support */
+    @media (prefers-reduced-motion: reduce) {
 
-      .greeting {
-        margin-bottom: 1.5rem;
-        padding-top: 1rem;
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
       }
-      .greeting h1 {
-        font-size: 2.2em;
-        font-weight: 800;
-      }
+    }
 
-      /* Section Styling */
-      .section {
-        margin-bottom: 1.5rem;
-      }
-      .section-title {
-        font-size: 1.2em;
-        font-weight: 700;
-        margin-bottom: 1rem;
-      }
+    /* Sport-specific analysis panels */
+    .sport-analysis-panel {
+      background-color: #f7f7f7;
+      border-radius: var(--border-radius-md);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      display: none;
+    }
 
-      /* Form Styling */
-      .form-control {
-        width: 100%;
-        padding: 0.85rem 1rem;
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius-md);
-        font-size: 0.95em;
-        font-family: "Inter", sans-serif;
-        background-color: #f7f7f7;
-        transition: all 0.2s ease;
-      }
-      .form-control:focus {
-        outline: none;
-        border-color: var(--accent-blue);
-        box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.1);
-      }
-      .form-group {
-        margin-bottom: 1rem;
-      }
-      .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-      }
-      .phone-input-container {
-        display: flex;
-      }
-      .phone-prefix {
-        padding: 0.85rem;
-        background-color: #e8e8ed;
-        border: 1px solid var(--border-color);
-        border-right: none;
-        border-radius: var(--border-radius-md) 0 0 var(--border-radius-md);
-      }
-      #athletePhone {
-        border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
-      }
+    body.dark-mode .sport-analysis-panel {
+      background-color: #31313f;
+    }
 
-      /* Error and success messages */
-      .message {
-        padding: 1rem;
-        border-radius: var(--border-radius-md);
-        margin-bottom: 1rem;
-        font-size: 0.9em;
-      }
-      .error-message {
-        background-color: #fee;
-        color: #c53030;
-        border: 1px solid #fed7d7;
-      }
-      .success-message {
-        background-color: #f0fff4;
-        color: #2d7d32;
-        border: 1px solid #c6f6d5;
-      }
+    .analysis-metric {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid var(--border-color);
+    }
 
-      /* Vertical Cards Grid */
-      .cards-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-      }
+    .analysis-metric:last-child {
+      border-bottom: none;
+    }
 
-      .card {
-        padding: 1.2rem;
-        border-radius: var(--border-radius-lg);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        text-align: left;
-      }
+    .metric-label {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
 
-      .card-icon {
-        font-size: 1.8em;
-        margin-right: 1rem;
-      }
-      .card-title {
-        font-size: 1.1em;
-        font-weight: 600;
-      }
-      .card-subtitle {
-        font-size: 0.85em;
-        color: rgba(0, 0, 0, 0.6);
-      }
+    .metric-value {
+      font-weight: 700;
+      color: var(--accent-blue);
+    }
 
-      /* Specific Card Styles */
-      .card.purple {
-        background-color: var(--card-purple);
-      }
-      .card.dark {
-        background-color: var(--card-dark);
-        color: white;
-      }
-      .card.dark .card-subtitle {
-        color: rgba(255, 255, 255, 0.7);
-      }
+    .metric-status {
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8em;
+      font-weight: 600;
+    }
 
-      .file-upload-area {
-        background-color: var(--card-dark);
-        color: white;
-      }
-      .file-upload-area.dragover {
-        border: 2px dashed var(--accent-blue);
-      }
+    .metric-status.excellent {
+      background-color: #10b981;
+      color: white;
+    }
 
-      /* Results Section */
-      .results-list-item {
-        display: flex;
-        align-items: center;
-        padding: 1rem 0;
-        border-bottom: 1px solid var(--border-color);
-      }
-      .results-list-item:last-child {
-        border-bottom: none;
-      }
-      .results-list-item .icon-wrapper {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        background-color: #e8e8ed;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 1.1em;
-        margin-right: 1rem;
-        color: var(--text-primary);
-      }
-      .results-list-item .text {
-        flex-grow: 1;
-        font-size: 0.95em;
-      }
+    .metric-status.good {
+      background-color: #f59e0b;
+      color: white;
+    }
 
-      .score-cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-      }
-      .score-card {
-        background-color: #f0f0f5;
-        padding: 1rem;
-        border-radius: var(--border-radius-md);
-        text-align: center;
-      }
-      .score-card.overall-score {
-        background-color: var(--accent-blue);
-        color: white;
-      }
-      .score-card .score-value {
-        font-size: 1.8em;
-        font-weight: 700;
-      }
-      .score-card .score-label {
-        font-size: 0.85em;
-        opacity: 0.8;
-      }
-      .score-card.overall-score .score-label {
-        opacity: 1;
-      }
+    .metric-status.needs-improvement {
+      background-color: #ef4444;
+      color: white;
+    }
 
-      /* Full Screen Loader */
-      .loader-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(5px);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-        color: white;
-        flex-direction: column;
-        text-align: center;
-      }
-      .spinner {
-        border: 4px solid rgba(255, 255, 255, 0.3);
-        border-top: 4px solid white;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        animation: spin 1s linear infinite;
-        margin-bottom: 1rem;
-      }
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
 
-      /* Button Styles */
-      button {
-        font-family: inherit;
-        font-size: 20px;
-        background: #212121;
-        color: white;
-        fill: rgb(155, 153, 153);
-        padding: 0.7em 1em;
-        padding-left: 0.9em;
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-        border: none;
-        border-radius: 15px;
-        font-weight: 1000;
-      }
 
-      button span {
-        display: block;
-        margin-left: 0.3em;
-        transition: all 0.3s ease-in-out;
-      }
 
-      button svg {
-        display: block;
-        transform-origin: center center;
-        transition: transform 0.3s ease-in-out;
-      }
 
-      button:hover {
-        background: #000;
-      }
 
-      button:hover .svg-wrapper {
-        transform: scale(1.25);
-        transition: 0.5s linear;
-      }
 
-      button:hover svg {
-        transform: translateX(1.2em) scale(1.1);
-        fill: #fff;
-      }
 
-      button:hover span {
-        opacity: 0;
-        transition: 0.5s linear;
-      }
 
-      button:active {
-        transform: scale(0.95);
-      }
+    /* This is the Style for the upload button  */
 
-      .cta {
-        position: relative;
-        margin: auto;
-        padding: 12px 18px;
-        transition: all 0.2s ease;
-        border: none;
-        background: none;
-        cursor: pointer;
-      }
+    /* From Uiverse.io by janisar-hyder */
+    .content__item {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+      pointer-events: none;
+    }
 
-      .cta:before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        display: block;
-        border-radius: 50px;
-        background: #dfceff;
-        width: 45px;
-        height: 45px;
-        transition: all 0.3s ease;
-      }
+    .button {
+      pointer-events: auto;
+      cursor: pointer;
+      background: #e7e7e7;
+      border: none;
+      width: 100%;
+      height: 100%;
+      padding: 1.5rem 3rem;
+      margin: 0;
+      font-family: inherit;
+      font-size: inherit;
+      position: relative;
+      display: inline-block;
+    }
 
-      .cta span {
-        position: relative;
-        font-family: "Ubuntu", sans-serif;
-        font-size: 18px;
-        font-weight: 700;
-        letter-spacing: 0.05em;
-        color: #6a32db;
-      }
+    .button::before,
+    .button::after {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
 
-      .cta svg {
-        position: relative;
-        top: 0;
-        margin-left: 10px;
-        fill: none;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-        stroke: #6a32db;
-        stroke-width: 2;
-        transform: translateX(-5px);
-        transition: all 0.3s ease;
-      }
+    .button--pan {
+      font-family: aktiv-grotesk-extended, sans-serif;
+      font-weight: 700;
+      border: 2px solid #000;
+      border-radius: 3rem;
+      overflow: hidden;
+      color: #fff;
+    }
 
-      .cta:hover:before {
-        width: 100%;
-        background: #dfceff;
-      }
+    .button--pan span {
+      position: relative;
+      mix-blend-mode: difference;
+    }
 
-      .cta:hover svg {
-        transform: translateX(0);
-      }
+    .button--pan::before {
+      content: "";
+      background: #000;
+      transition: transform 0.3s cubic-bezier(0.7, 0, 0.2, 1);
+    }
 
-      .cta:active {
-        transform: scale(0.95);
-      }
+    .button--pan:hover::before {
+      transform: translate3d(0, -100%, 0);
+    }
+  </style>
+</head>
 
-      .action-button.reset {
-        background-color: #6b7280;
-        margin-top: 2rem;
-      }
-
-      .disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        pointer-events: none;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="loader-overlay" id="fullScreenLoader">
-      <div class="spinner"></div>
-      <p>Analyzing Performance...</p>
+<body>
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal-content">
+      <h3 data-lang="confirmDeleteTitle">Confirm Deletion</h3>
+      <p data-lang="confirmDeleteText">
+        Are you sure you want to delete this analysis entry? This action
+        cannot be undone.
+      </p>
+      <div class="modal-actions">
+        <button class="action-button cancel-btn" id="cancelDeleteBtn" data-lang="cancel">
+          Cancel
+        </button>
+        <button class="action-button confirm-btn" id="confirmDeleteBtn" data-lang="delete">
+          Delete
+        </button>
+      </div>
     </div>
+  </div>
 
-    <div class="app-container">
-      <div class="top-bar">
-        <div class="app-logo">Sports AI</div>
-        <div class="user-avatar">
-          <img
-            src="https://static.vecteezy.com/system/resources/previews/011/557/890/original/cricket-player-avatar-illustration-png.png"
-            alt="User Avatar"
-          />
+  <div class="modal-overlay" id="infoModal">
+    <div class="modal-content">
+      <h3 id="infoModalTitle"></h3>
+      <p id="infoModalText"></p>
+      <div class="modal-actions single-button">
+        <button class="action-button" id="infoModalOkBtn">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="loader-overlay" id="fullScreenLoader">
+    <div class="spinner"></div>
+    <p>Analyzing Performance...</p>
+  </div>
+
+  <!-- Interactive Tutorial Overlay -->
+  <div class="tutorial-overlay" id="tutorialOverlay">
+    <div class="tutorial-content">
+      <div class="tutorial-header">
+        <h3 id="tutorialTitle">Welcome to CodeStar!</h3>
+        <button class="tutorial-close" id="tutorialClose">×</button>
+      </div>
+      <div class="tutorial-body">
+        <div class="tutorial-step" id="tutorialStep">
+          <img id="tutorialImage" src="" alt="Tutorial Step">
+          <p id="tutorialText">Let's get you started with sports analysis!</p>
         </div>
       </div>
-
-      <div class="content-area">
-        <div class="greeting">
-          <h1 id="greetingHeader">Hello Athlete</h1>
+      <div class="tutorial-footer">
+        <button class="tutorial-btn secondary" id="tutorialSkip">Skip Tutorial</button>
+        <div class="tutorial-navigation">
+          <button class="tutorial-btn" id="tutorialPrev" disabled>Previous</button>
+          <span class="tutorial-progress" id="tutorialProgress">1 / 5</span>
+          <button class="tutorial-btn primary" id="tutorialNext">Next</button>
         </div>
+      </div>
+    </div>
+  </div>
 
-        <div id="messageArea"></div>
 
+
+  <div class="auth-container" id="authContainer">
+    <form id="loginForm" class="auth-form">
+      <h2 data-lang="welcomeBack">Welcome Back!</h2>
+      <div class="form-group">
+        <input type="email" id="loginEmail" class="form-control" placeholder="Email" required />
+      </div>
+      <div class="form-group">
+        <input type="password" id="loginPassword" class="form-control" data-lang-placeholder="password"
+          placeholder="Password" required />
+      </div>
+      <button type="submit" class="action-button" data-lang="login">
+        Login
+      </button>
+      <p class="auth-switch-link">
+        <span data-lang="needAccount">Need an account?</span>
+        <a id="showSignupLink" data-lang="signUp">Sign Up</a>
+      </p>
+    </form>
+    <form id="signupForm" class="auth-form" style="display: none">
+      <h2 data-lang="createAccount">Create Account</h2>
+      <div class="profile-pic-uploader">
+        <img id="signupImagePreview"
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_RlT-ytB9A_Mibb938A523B2023oifSuJEg&s"
+          alt="Profile Preview" />
+        <label for="signupProfilePicInput" class="upload-label" data-lang="uploadPhoto">Upload Photo</label>
+        <input type="file" id="signupProfilePicInput" accept="image/*" style="display: none" />
+      </div>
+      <div class="form-group">
+        <input type="text" id="signupName" class="form-control" data-lang-placeholder="fullName" placeholder="Full Name"
+          required />
+      </div>
+      <div class="form-group">
+        <input type="email" id="signupEmail" class="form-control" placeholder="Email" required />
+      </div>
+      <div class="form-group">
+        <input type="password" id="signupPassword" class="form-control" data-lang-placeholder="password"
+          placeholder="Password" required />
+      </div>
+      <button type="submit" class="action-button" data-lang="signUp">
+        Sign Up
+      </button>
+      <p class="auth-switch-link">
+        <span data-lang="haveAccount">Already have an account?</span>
+        <a id="showLoginLink" data-lang="login">Login</a>
+      </p>
+    </form>
+  </div>
+
+  <div class="app-container" id="appContainer" style="display: none">
+    <div class="top-bar">
+      <div class="back-btn" id="backBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill"
+          viewBox="0 0 16 16">
+          <path
+            d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
+        </svg>
+      </div>
+      <div class="app-logo">CodeStar</div>
+      <div class="user-avatar" id="avatarBtn" title="View Profile">
+        <img id="userAvatarImg" src="" alt="User Avatar" />
+      </div>
+    </div>
+    <div class="content-area">
+      <div id="mainAppContent">
+        <div class="greeting">
+          <h1 id="greetingHeader">Hello User</h1>
+        </div>
         <div id="mainContent">
           <div class="section" id="formSection">
-            <h2 class="section-title">Athlete Details</h2>
+            <h2 class="section-title" data-lang="athleteDetails">
+              Athlete Details
+            </h2>
             <form id="athleteForm" onsubmit="return false;">
               <div class="form-group">
-                <input
-                  type="text"
-                  id="athleteName"
-                  class="form-control"
-                  required
-                  placeholder="Athlete Name"
-                />
+                <input type="text" id="athleteName" class="form-control" required data-lang-placeholder="athleteName"
+                  placeholder="Athlete Name" aria-label="Enter athlete name" autocomplete="name" />
               </div>
               <div class="form-row">
                 <div class="form-group">
-                  <input
-                    type="number"
-                    id="athleteAge"
-                    class="form-control"
-                    min="10"
-                    max="30"
-                    required
-                    placeholder="Age"
-                  />
+                  <input type="number" id="athleteAge" class="form-control" min="10" max="30" required
+                    data-lang-placeholder="age" placeholder="Age" />
                 </div>
                 <div class="form-group">
-                  <select id="athleteSport" class="form-control" required>
-                    <option value="">Select Sport</option>
+                  <select id="athleteSport" class="form-control" required aria-label="Select sport type">
+                    <option value="" data-lang="selectSport">
+                      Select Sport
+                    </option>
                     <option value="cricket">Cricket</option>
                     <option value="football">Football</option>
                     <option value="athletics">Athletics</option>
@@ -486,12 +1092,16 @@
               <div class="form-row">
                 <div class="form-group">
                   <select id="athleteActivity" class="form-control" required>
-                    <option value="">Select Activity</option>
+                    <option value="" data-lang="selectActivity">
+                      Select Activity
+                    </option>
                   </select>
                 </div>
                 <div class="form-group">
                   <select id="athleteRegion" class="form-control" required>
-                    <option value="">Select State/UT</option>
+                    <option value="" data-lang="selectState">
+                      Select State/UT
+                    </option>
                     <option value="Andhra Pradesh">Andhra Pradesh</option>
                     <option value="Delhi">Delhi</option>
                     <option value="Gujarat">Gujarat</option>
@@ -505,482 +1115,1288 @@
                   </select>
                 </div>
               </div>
-              <div class="form-group phone-input-container">
-                <span class="phone-prefix">+91</span>
-                <input
-                  type="tel"
-                  id="athletePhone"
-                  class="form-control"
-                  pattern="[0-9]{10}"
-                  placeholder="Phone Number"
-                />
-              </div>
             </form>
           </div>
-
           <div class="section">
             <div class="cards-grid">
-              <div class="card" id="fileUploadArea">
-                <div class="card-content">
-                  <button>
-                    <div class="svg-wrapper-1">
-                      <div class="svg-wrapper">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          width="30"
-                          height="30"
-                          class="icon"
-                        >
-                          <path
-                            d="M22,15.04C22,17.23 20.24,19 18.07,19H5.93C3.76,19 2,17.23 2,15.04C2,13.07 3.43,11.44 5.31,11.14C5.28,11 5.27,10.86 5.27,10.71C5.27,9.33 6.38,8.2 7.76,8.2C8.37,8.2 8.94,8.43 9.37,8.8C10.14,7.05 11.13,5.44 13.91,5.44C17.28,5.44 18.87,8.06 18.87,10.83C18.87,10.94 18.87,11.06 18.86,11.17C20.65,11.54 22,13.13 22,15.04Z"
-                          ></path>
-                        </svg>
-                      </div>
-                    </div>
+              <div id="fileUploadArea">
+                <!-- <div style="text-align: center" data-lang="uploadVideo">
+                    Upload Video
+                  </div> -->
+                <li class="content__item">
+                  <button class="button button--pan">
                     <span>Upload</span>
                   </button>
-                </div>
-                <input
-                  type="file"
-                  id="videoFile"
-                  accept="video/*"
-                  style="display: none"
-                />
+                </li>
               </div>
-              <div class="card purple" id="demoBtn">
-                <div class="card-icon">🎯</div>
-                <div class="card-content">
-                  <div class="card-title">Run Demo</div>
-                  <div class="card-subtitle">Use sample data</div>
-                </div>
+              <div id="demoBtn">
+                <!-- <div style="text-align: center" data-lang="runDemo">
+                    Run Demo
+                  </div> -->
+                <li class="content__item">
+                  <button class="button button--pan">
+                    <span>Run Demo</span>
+                  </button>
+                </li>
               </div>
+            </div>
+            <input type="file" id="videoFile" accept="video/*" style="display: none" />
+          </div>
+
+          <!-- Sport-specific Analysis Panels -->
+          <div class="sport-analysis-panel" id="cricketAnalysis">
+            <h3>Cricket Analysis Metrics</h3>
+            <div class="analysis-metric">
+              <span class="metric-label">Bowling Action</span>
+              <span class="metric-value" id="bowlingAction">-</span>
+            </div>
+            <div class="analysis-metric">
+              <span class="metric-label">Ball Release Point</span>
+              <span class="metric-value" id="releasePoint">-</span>
+            </div>
+            <div class="analysis-metric">
+              <span class="metric-label">Follow Through</span>
+              <span class="metric-value" id="followThrough">-</span>
+            </div>
+            <div class="analysis-metric">
+              <span class="metric-label">Batting Stance</span>
+              <span class="metric-value" id="battingStance">-</span>
+            </div>
+          </div>
+
+          <div class="sport-analysis-panel" id="footballAnalysis">
+            <h3>Football Analysis Metrics</h3>
+            <div class="analysis-metric">
+              <span class="metric-label">Shot Accuracy</span>
+              <span class="metric-value" id="shotAccuracy">-</span>
+            </div>
+            <div class="analysis-metric">
+              <span class="metric-label">Dribbling Pattern</span>
+              <span class="metric-value" id="dribblingPattern">-</span>
+            </div>
+            <div class="analysis-metric">
+              <span class="metric-label">Defensive Position</span>
+              <span class="metric-value" id="defensivePosition">-</span>
+            </div>
+            <div class="analysis-metric">
+              <span class="metric-label">Ball Control</span>
+              <span class="metric-value" id="ballControl">-</span>
+            </div>
+          </div>
+
+          <div class="sport-analysis-panel" id="athleticsAnalysis">
+            <h3>Athletics Analysis Metrics</h3>
+            <div class="analysis-metric">
+              <span class="metric-label">Running Gait</span>
+              <span class="metric-value" id="runningGait">-</span>
+            </div>
+            <div class="analysis-metric">
+              <span class="metric-label">Jump Technique</span>
+              <span class="metric-value" id="jumpTechnique">-</span>
+            </div>
+            <div class="analysis-metric">
+              <span class="metric-label">Throwing Mechanics</span>
+              <span class="metric-value" id="throwingMechanics">-</span>
+            </div>
+            <div class="analysis-metric">
+              <span class="metric-label">Stride Length</span>
+              <span class="metric-value" id="strideLength">-</span>
             </div>
           </div>
 
           <div class="section" id="submitSection">
-            <button class="cta action-button" id="analyzeBtn">
-              <span>Get Started</span>
-              <svg width="15px" height="10px" viewBox="0 0 13 10">
-                <path d="M1,5 L11,5"></path>
-                <polyline points="8 1 12 5 8 9"></polyline>
-              </svg>
+            <button class="action-button" id="analyzeBtn" data-lang="startAnalysis"
+              aria-label="Start performance analysis">
+              Start Analysis
             </button>
           </div>
         </div>
+      </div>
+      <div class="section" id="resultsSection" style="display: none">
+        <h2 class="section-title" data-lang="analysisResults">
+          Analysis Results
+        </h2>
+        <div class="score-cards" id="scoreCards"></div>
+        <h3 class="section-title" style="margin-top: 2rem" data-lang="recommendations">
+          Recommendations
+        </h3>
+        <div id="recommendationsList"></div>
+        <h3 class="section-title" style="margin-top: 2rem" data-lang="scoreBreakdown">
+          Score Breakdown
+        </h3>
+        <canvas id="resultsChart"></canvas>
+        <button class="action-button" id="resetBtn" style="margin-top: 2rem; background-color: var(--text-secondary)"
+          data-lang="analyzeAnother">
+          Analyze Another
+        </button>
+      </div>
+      <div class="section" id="detailedHistoryView" style="display: none">
+        <h2 class="section-title" data-lang="analysisDetails">
+          Analysis Details
+        </h2>
+        <div class="score-cards" id="detailedScoreCards"></div>
+        <h3 class="section-title" style="margin-top: 2rem" data-lang="recommendations">
+          Recommendations
+        </h3>
+        <div id="detailedRecommendations"></div>
+      </div>
 
-        <div class="section" id="resultsSection" style="display: none">
-          <h2 class="section-title">Analysis Results</h2>
-          <div class="score-cards" id="scoreCards"></div>
-          <div id="recommendationsList"></div>
-          <button class="action-button reset" id="resetBtn">
-            Analyze Another
-          </button>
+      <!-- History Tab Content -->
+      <div class="section history-section" id="historySection" style="display: none">
+        <div class="history-header">
+          <h2 class="section-title" data-lang="analysisHistory">Analysis History</h2>
+        </div>
+
+        <div class="history-stats">
+          <div class="stat-card">
+            <div class="stat-value" id="totalAnalyses">0</div>
+            <div class="stat-label" data-lang="totalAnalyses">Total Analyses</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="avgScore">0</div>
+            <div class="stat-label" data-lang="avgScore">Avg Score</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="bestScore">0</div>
+            <div class="stat-label" data-lang="bestScore">Best Score</div>
+          </div>
+        </div>
+
+        <div id="historyListMain"></div>
+      </div>
+      <div class="section" id="profileSection" style="display: none">
+        <div id="profileView">
+          <div class="profile-details">
+            <img id="profilePageImg" src="" alt="User Profile Image" />
+            <h2 id="profilePageName"></h2>
+            <p id="profilePageEmail"></p>
+          </div>
+          <div class="settings-wrapper">
+            <div class="setting-item">
+              <label for="darkModeToggle" data-lang="darkMode">Dark Mode</label>
+              <label class="theme-switch"><input type="checkbox" id="darkModeToggle" /><span
+                  class="slider round"></span></label>
+            </div>
+            <div class="setting-item">
+              <label for="languageSelector" data-lang="language">Language</label>
+              <div class="language-switcher">
+                <select id="languageSelector">
+                  <option value="en">English</option>
+                  <option value="hi">हिंदी</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <h2 class="section-title" data-lang="analysisHistory">
+            Analysis History
+          </h2>
+          <div id="historyListContainer"></div>
+          <div class="form-actions">
+            <button class="action-button" id="editProfileBtn" data-lang="editProfile">
+              Edit Profile
+            </button>
+            <button class="action-button" id="logoutBtn" data-lang="logout">
+              Logout
+            </button>
+          </div>
+        </div>
+        <div id="editProfileView" style="display: none">
+          <h2 class="section-title" data-lang="editProfile">Edit Profile</h2>
+          <form id="editProfileForm">
+            <div class="profile-pic-uploader">
+              <img id="editImagePreview" src="" alt="Profile Preview" />
+              <label for="editProfilePicInput" class="upload-label" data-lang="changePhoto">Change Photo</label>
+              <input type="file" id="editProfilePicInput" accept="image/*" style="display: none" />
+            </div>
+            <div class="form-group">
+              <input type="text" id="editName" class="form-control" data-lang-placeholder="fullName"
+                placeholder="Full Name" required />
+            </div>
+            <div class="form-group">
+              <input type="password" id="editPassword" class="form-control" data-lang-placeholder="newPasswordOptional"
+                placeholder="New Password (optional)" />
+            </div>
+            <div class="form-actions">
+              <button type="button" id="cancelEditBtn" class="action-button"
+                style="background-color: var(--text-secondary)" data-lang="cancel">
+                Cancel
+              </button>
+              <button type="submit" class="action-button" data-lang="saveChanges">
+                Save Changes
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
 
-    <script>
-      // Configuration
-      const API_BASE_URL = "http://localhost:5000"; // Change this if your Flask server runs on a different port
+  </div>
 
-      // DOM Elements
-      const athleteNameInput = document.getElementById("athleteName");
-      const greetingHeader = document.getElementById("greetingHeader");
-      const messageArea = document.getElementById("messageArea");
 
-      const fileUploadArea = document.getElementById("fileUploadArea");
-      const fileInput = document.getElementById("videoFile");
-      const demoBtn = document.getElementById("demoBtn");
-      const analyzeBtn = document.getElementById("analyzeBtn");
-      const resetBtn = document.getElementById("resetBtn");
 
-      const mainContent = document.getElementById("mainContent");
-      const resultsSection = document.getElementById("resultsSection");
-      const fullScreenLoader = document.getElementById("fullScreenLoader");
 
-      let selectedVideoFile = null;
-      let isDemoMode = false;
 
-      // Utility Functions
-      function showMessage(message, type = "error") {
-        messageArea.innerHTML = `<div class="message ${type}-message">${message}</div>`;
-        setTimeout(() => {
-          messageArea.innerHTML = "";
-        }, 5000);
+  <script>
+    // --- DOM Elements ---
+    const authContainer = document.getElementById("authContainer");
+    const appContainer = document.getElementById("appContainer");
+
+    // Tutorial elements
+    const tutorialOverlay = document.getElementById("tutorialOverlay");
+    const tutorialClose = document.getElementById("tutorialClose");
+    const tutorialSkip = document.getElementById("tutorialSkip");
+    const tutorialPrev = document.getElementById("tutorialPrev");
+    const tutorialNext = document.getElementById("tutorialNext");
+    const tutorialTitle = document.getElementById("tutorialTitle");
+    const tutorialText = document.getElementById("tutorialText");
+    const tutorialImage = document.getElementById("tutorialImage");
+    const tutorialProgress = document.getElementById("tutorialProgress");
+
+
+
+    // Sport-specific analysis panels
+    const cricketAnalysis = document.getElementById("cricketAnalysis");
+    const footballAnalysis = document.getElementById("footballAnalysis");
+    const athleticsAnalysis = document.getElementById("athleticsAnalysis");
+
+    const historySection = document.getElementById("historySection");
+    const historyListMain = document.getElementById("historyListMain");
+    const loginForm = document.getElementById("loginForm");
+    const signupForm = document.getElementById("signupForm");
+    const showSignupLink = document.getElementById("showSignupLink");
+    const showLoginLink = document.getElementById("showLoginLink");
+    const avatarBtn = document.getElementById("avatarBtn");
+    const signupProfilePicInput = document.getElementById(
+      "signupProfilePicInput"
+    );
+    const signupImagePreview = document.getElementById("signupImagePreview");
+    const userAvatarImg = document.getElementById("userAvatarImg");
+    const greetingHeader = document.getElementById("greetingHeader");
+    const fileUploadArea = document.getElementById("fileUploadArea");
+    const fileInput = document.getElementById("videoFile");
+    const demoBtn = document.getElementById("demoBtn");
+    const analyzeBtn = document.getElementById("analyzeBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const mainContent = document.getElementById("mainContent");
+    const resultsSection = document.getElementById("resultsSection");
+    const scoreCardsContainer = document.getElementById("scoreCards");
+    const recommendationsList = document.getElementById(
+      "recommendationsList"
+    );
+    const resultsChartCanvas = document.getElementById("resultsChart");
+    const fullScreenLoader = document.getElementById("fullScreenLoader");
+    const mainAppContent = document.getElementById("mainAppContent");
+    const profileSection = document.getElementById("profileSection");
+    const backBtn = document.getElementById("backBtn");
+    const profileView = document.getElementById("profileView");
+    const profilePageImg = document.getElementById("profilePageImg");
+    const profilePageName = document.getElementById("profilePageName");
+    const profilePageEmail = document.getElementById("profilePageEmail");
+    const historyListContainer = document.getElementById(
+      "historyListContainer"
+    );
+    const logoutBtn = document.getElementById("logoutBtn");
+    const editProfileBtn = document.getElementById("editProfileBtn");
+    const editProfileView = document.getElementById("editProfileView");
+    const editProfileForm = document.getElementById("editProfileForm");
+    const cancelEditBtn = document.getElementById("cancelEditBtn");
+    const editImagePreview = document.getElementById("editImagePreview");
+    const editProfilePicInput = document.getElementById(
+      "editProfilePicInput"
+    );
+    const editName = document.getElementById("editName");
+    const editPassword = document.getElementById("editPassword");
+    const darkModeToggle = document.getElementById("darkModeToggle");
+    const languageSelector = document.getElementById("languageSelector");
+    const confirmModal = document.getElementById("confirmModal");
+    const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
+    const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+    const infoModal = document.getElementById("infoModal");
+    const infoModalTitle = document.getElementById("infoModalTitle");
+    const infoModalText = document.getElementById("infoModalText");
+    const infoModalOkBtn = document.getElementById("infoModalOkBtn");
+    const detailedHistoryView = document.getElementById(
+      "detailedHistoryView"
+    );
+    const detailedScoreCards = document.getElementById("detailedScoreCards");
+    const detailedRecommendations = document.getElementById(
+      "detailedRecommendations"
+    );
+
+    // --- State Variables ---
+    let selectedVideoFile = null;
+    let profilePicDataUrl = null;
+    let newProfilePicDataUrl = null;
+    let itemIndexToDelete = null;
+    let currentChart = null;
+    let currentView = "main"; // NEW: State to track current view
+    let currentTutorialStep = 0;
+    const defaultAvatarSrc =
+      "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQSZAnDvEVAOMbpGDTi2W6Aw2rWKPWlkQZwkQRQivsnMwo3KpqVKi7b7yB4zxWg4grn7u9Hn_2r4DJRGbs31eCmr3VfUfRiuC-OwIoOFhLGYA";
+    const defaultSignupPreviewSrc =
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_RlT-ytB9A_Mibb938A523B2023oifSuJEg&s";
+
+    // Tutorial steps data
+    const tutorialSteps = [
+      {
+        title: "Welcome to CodeStar!",
+        text: "Your AI-powered sports analysis companion. Let's take a quick tour to get you started!",
+        image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMEE4NEZGIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyIiBmb250LXNpemU9IjI0Ij5Db2RlU3RhcjwvdGV4dD4KPC9zdmc+"
+      },
+      {
+        title: "Enter Athlete Details",
+        text: "Start by filling in the athlete's information including name, age, sport, and activity type.",
+        image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjBGMEY1Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiBmaWxsPSIjMUExQTJFIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iSW50ZXIiIGZvbnQtc2l6ZT0iMTgiPkF0aGxldGUgRm9ybTwvdGV4dD4KPC9zdmc+"
+      },
+      {
+        title: "Upload or Demo",
+        text: "Upload a video of the performance or try our demo to see how the analysis works.",
+        image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRTBEOUZDIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiBmaWxsPSIjMUExQTJFIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iSW50ZXIiIGZvbnQtc2l6ZT0iMTgiPlVwbG9hZCBWaWRlbzwvdGV4dD4KPC9zdmc+"
+      },
+      {
+        title: "AI Analysis",
+        text: "Our AI analyzes technique, posture, and performance metrics specific to your chosen sport.",
+        image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRkRGMkQxIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiBmaWxsPSIjMUExQTJFIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iSW50ZXIiIGZvbnQtc2l6ZT0iMTgiPkFJIEFuYWx5c2lzPC90ZXh0Pgo8L3N2Zz4="
+      },
+      {
+        title: "Get Results & Improve",
+        text: "View detailed scores, recommendations, and track your progress over time. You're ready to start!",
+        image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMTBCOTgxIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkludGVyIiBmb250LXNpemU9IjE4Ij5SZXN1bHRzICZhbXA7IFByb2dyZXNzPC90ZXh0Pgo8L3N2Zz4="
+      }
+    ];
+
+    // --- TUTORIAL LOGIC ---
+    function showTutorial() {
+      currentTutorialStep = 0;
+      updateTutorialStep();
+      tutorialOverlay.style.display = "flex";
+    }
+
+    function updateTutorialStep() {
+      const step = tutorialSteps[currentTutorialStep];
+      tutorialTitle.textContent = step.title;
+      tutorialText.textContent = step.text;
+      tutorialImage.src = step.image;
+      tutorialProgress.textContent = `${currentTutorialStep + 1} / ${tutorialSteps.length}`;
+
+      tutorialPrev.disabled = currentTutorialStep === 0;
+      tutorialNext.textContent = currentTutorialStep === tutorialSteps.length - 1 ? "Finish" : "Next";
+    }
+
+    function closeTutorial() {
+      tutorialOverlay.style.display = "none";
+      localStorage.setItem("tutorialCompleted", "true");
+    }
+
+    tutorialClose.addEventListener("click", closeTutorial);
+    tutorialSkip.addEventListener("click", closeTutorial);
+
+    tutorialPrev.addEventListener("click", () => {
+      if (currentTutorialStep > 0) {
+        currentTutorialStep--;
+        updateTutorialStep();
+      }
+    });
+
+    tutorialNext.addEventListener("click", () => {
+      if (currentTutorialStep < tutorialSteps.length - 1) {
+        currentTutorialStep++;
+        updateTutorialStep();
+      } else {
+        closeTutorial();
+      }
+    });
+
+
+
+    // --- BOTTOM NAVIGATION LOGIC ---
+
+
+    // Handle history item clicks in main history tab
+    historyListMain.addEventListener('click', function (event) {
+      if (event.target.classList.contains("history-item-delete-btn")) {
+        event.stopPropagation();
+        itemIndexToDelete = parseInt(
+          event.target.getAttribute("data-delete-index"),
+          10
+        );
+        confirmModal.style.display = "flex";
+      } else if (event.target.closest(".history-item")) {
+        const itemIndex = parseInt(
+          event.target
+            .closest(".history-item")
+            .getAttribute("data-history-index"),
+          10
+        );
+        showDetailedHistory(itemIndex);
+      }
+    });
+
+    // --- SPORT-SPECIFIC ANALYSIS ---
+    function showSportAnalysis(sport) {
+      // Hide all panels first
+      cricketAnalysis.style.display = 'none';
+      footballAnalysis.style.display = 'none';
+      athleticsAnalysis.style.display = 'none';
+
+      // Show relevant panel
+      if (sport === 'cricket') {
+        cricketAnalysis.style.display = 'block';
+      } else if (sport === 'football') {
+        footballAnalysis.style.display = 'block';
+      } else if (sport === 'athletics') {
+        athleticsAnalysis.style.display = 'block';
+      }
+    }
+
+    function generateSportSpecificMetrics(sport, activity) {
+      const metrics = {};
+
+      if (sport === 'cricket') {
+        metrics.bowlingAction = Math.round(70 + Math.random() * 25) + '%';
+        metrics.releasePoint = Math.round(65 + Math.random() * 30) + '%';
+        metrics.followThrough = Math.round(75 + Math.random() * 20) + '%';
+        metrics.battingStance = Math.round(68 + Math.random() * 27) + '%';
+      } else if (sport === 'football') {
+        metrics.shotAccuracy = Math.round(60 + Math.random() * 35) + '%';
+        metrics.dribblingPattern = Math.round(72 + Math.random() * 23) + '%';
+        metrics.defensivePosition = Math.round(67 + Math.random() * 28) + '%';
+        metrics.ballControl = Math.round(74 + Math.random() * 21) + '%';
+      } else if (sport === 'athletics') {
+        metrics.runningGait = Math.round(69 + Math.random() * 26) + '%';
+        metrics.jumpTechnique = Math.round(71 + Math.random() * 24) + '%';
+        metrics.throwingMechanics = Math.round(66 + Math.random() * 29) + '%';
+        metrics.strideLength = Math.round(73 + Math.random() * 22) + '%';
       }
 
-      function showLoader() {
-        fullScreenLoader.style.display = "flex";
-      }
+      return metrics;
+    }
 
-      function hideLoader() {
-        fullScreenLoader.style.display = "none";
+    function updateSportMetrics(sport, metrics) {
+      if (sport === 'cricket') {
+        document.getElementById('bowlingAction').textContent = metrics.bowlingAction;
+        document.getElementById('releasePoint').textContent = metrics.releasePoint;
+        document.getElementById('followThrough').textContent = metrics.followThrough;
+        document.getElementById('battingStance').textContent = metrics.battingStance;
+      } else if (sport === 'football') {
+        document.getElementById('shotAccuracy').textContent = metrics.shotAccuracy;
+        document.getElementById('dribblingPattern').textContent = metrics.dribblingPattern;
+        document.getElementById('defensivePosition').textContent = metrics.defensivePosition;
+        document.getElementById('ballControl').textContent = metrics.ballControl;
+      } else if (sport === 'athletics') {
+        document.getElementById('runningGait').textContent = metrics.runningGait;
+        document.getElementById('jumpTechnique').textContent = metrics.jumpTechnique;
+        document.getElementById('throwingMechanics').textContent = metrics.throwingMechanics;
+        document.getElementById('strideLength').textContent = metrics.strideLength;
       }
+    }
 
-      function setButtonState(disabled) {
-        analyzeBtn.classList.toggle("disabled", disabled);
+    // --- MODAL & POPUP LOGIC ---
+    function showInfoPopup(titleKey, messageKey) {
+      const lang = localStorage.getItem("language") || "en";
+      infoModalTitle.textContent = translations[lang][titleKey] || titleKey;
+      infoModalText.textContent =
+        translations[lang][messageKey] || messageKey;
+      infoModal.style.display = "flex";
+    }
+    infoModalOkBtn.addEventListener("click", () => {
+      infoModal.style.display = "none";
+    });
+
+    // --- AUTHENTICATION & UI LOGIC ---
+    showSignupLink.addEventListener("click", () => {
+      loginForm.style.display = "none";
+      signupForm.style.display = "block";
+    });
+    showLoginLink.addEventListener("click", () => {
+      signupForm.style.display = "none";
+      loginForm.style.display = "block";
+    });
+
+    signupProfilePicInput.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          signupImagePreview.src = e.target.result;
+          profilePicDataUrl = e.target.result;
+        };
+        reader.readAsDataURL(file);
       }
+    });
 
-      // Event Listeners
-      athleteNameInput.addEventListener("input", () => {
-        const name = athleteNameInput.value.trim();
-        if (name) {
-          greetingHeader.textContent = `Hello ${name}`;
-        } else {
-          greetingHeader.textContent = "Hello Athlete";
+    signupForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("signupName").value;
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
+      if (name && email && password) {
+        const userData = {
+          name,
+          email,
+          password,
+          profilePic: profilePicDataUrl,
+        };
+        localStorage.setItem(`user_${email}`, JSON.stringify(userData));
+        showInfoPopup("signupSuccessTitle", "signupSuccessText");
+        signupForm.reset();
+        signupImagePreview.src = defaultSignupPreviewSrc;
+        profilePicDataUrl = null;
+        showLoginLink.click();
+      } else {
+        showInfoPopup("errorTitle", "fillAllFields");
+      }
+    });
+
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+      const storedUser = JSON.parse(localStorage.getItem(`user_${email}`));
+      if (storedUser && storedUser.password === password) {
+        localStorage.setItem("currentUserEmail", email);
+        showApp(storedUser);
+      } else {
+        showInfoPopup("loginErrorTitle", "loginErrorText");
+      }
+    });
+
+    // --- AUTHENTICATION & UI LOGIC ---
+    function showApp(user) {
+      authContainer.style.display = "none";
+      appContainer.style.display = "flex";
+      greetingHeader.textContent = `Hello, ${user.name.split(" ")[0]}`;
+      userAvatarImg.src = user.profilePic || defaultAvatarSrc;
+      updateLanguage(localStorage.getItem("language") || "en");
+      // Ensure back button is hidden on home/main view
+      backBtn.style.display = "none";
+      currentView = "main";
+
+    }
+
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("currentUserEmail");
+      appContainer.style.display = "none";
+      authContainer.style.display = "block";
+      loginForm.style.display = "block";
+      signupForm.style.display = "none";
+      loginForm.reset();
+      userAvatarImg.src = defaultAvatarSrc;
+
+      resetToMainView();
+    });
+
+    window.addEventListener("load", () => {
+      const currentUserEmail = localStorage.getItem("currentUserEmail");
+      if (currentUserEmail) {
+        const storedUser = JSON.parse(
+          localStorage.getItem(`user_${currentUserEmail}`)
+        );
+        if (storedUser) {
+          showApp(storedUser);
         }
-      });
+      }
+    });
 
-      // File upload handling
-      fileUploadArea.addEventListener("click", () => {
-        if (!isDemoMode) {
-          fileInput.click();
-        }
-      });
+    function resetToMainView() {
+      resultsSection.style.display = "none";
+      profileSection.style.display = "none";
+      detailedHistoryView.style.display = "none";
+      historySection.style.display = "none";
+      mainAppContent.style.display = "block";
+      backBtn.style.display = "none";
+      currentView = "main";
 
-      // Drag and drop functionality
-      ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
-        fileUploadArea.addEventListener(
-          eventName,
-          (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          },
-          false
-        );
-      });
 
-      ["dragenter", "dragover"].forEach((eventName) => {
-        fileUploadArea.addEventListener(
-          eventName,
-          () => fileUploadArea.classList.add("dragover"),
-          false
-        );
-      });
+    }
 
-      ["dragleave", "drop"].forEach((eventName) => {
-        fileUploadArea.addEventListener(
-          eventName,
-          () => fileUploadArea.classList.remove("dragover"),
-          false
-        );
-      });
+    // --- PROFILE PAGE, NAVIGATION & EDIT LOGIC ---
+    function showProfilePage() {
+      profileSection.style.display = 'block';
+      profileView.style.display = 'block';
+      editProfileView.style.display = 'none';
+      mainAppContent.style.display = 'none';
+      backBtn.style.display = 'block';
+      currentView = 'profile';
+    }
+    avatarBtn.addEventListener("click", showProfilePage);
 
-      fileUploadArea.addEventListener(
-        "drop",
-        (e) => handleFile(e.dataTransfer.files[0]),
-        false
+    backBtn.addEventListener("click", () => {
+      if (currentView === "profile" || currentView === "results") {
+        resetForm();
+      } else if (currentView === "detailedHistory") {
+        showProfilePage();
+      }
+    });
+
+    function renderProfilePage() {
+      const currentUserEmail = localStorage.getItem("currentUserEmail");
+      const user = JSON.parse(
+        localStorage.getItem(`user_${currentUserEmail}`)
       );
+      profilePageName.textContent = user.name;
+      profilePageEmail.textContent = user.email;
+      profilePageImg.src = user.profilePic || defaultAvatarSrc;
 
-      fileInput.addEventListener("change", (e) =>
-        handleFile(e.target.files[0])
+      const history =
+        JSON.parse(localStorage.getItem(`history_${currentUserEmail}`)) || [];
+      historyListContainer.innerHTML = "";
+      if (history.length === 0) {
+        historyListContainer.innerHTML = `<p style="text-align:center; color: var(--text-secondary);" data-lang="noHistory">No analysis history found.</p>`;
+      } else {
+        history
+          .slice()
+          .reverse()
+          .forEach((item, displayIndex) => {
+            const originalIndex = history.length - 1 - displayIndex;
+            const historyCard = `
+                    <div class="history-item" data-history-index="${originalIndex}">
+                        <div class="history-item-info">
+                            <h3>${item.athleteName}</h3>
+                            <p>${item.sport} • ${item.date}</p>
+                        </div>
+                        <div class="history-item-score">${item.results.overall_score}</div>
+                        <div class="history-item-delete-btn" data-delete-index="${originalIndex}" title="Delete Entry">🗑️</div>
+                    </div>
+                  `;
+            historyListContainer.innerHTML += historyCard;
+          });
+      }
+      updateLanguage(localStorage.getItem("language") || "en");
+    }
+
+    editProfileBtn.addEventListener("click", () => {
+      profileView.style.display = "none";
+      editProfileView.style.display = "block";
+      populateEditForm();
+    });
+
+    cancelEditBtn.addEventListener("click", () => {
+      editProfileView.style.display = "none";
+      profileView.style.display = "block";
+    });
+
+    editProfilePicInput.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          editImagePreview.src = e.target.result;
+          newProfilePicDataUrl = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    function populateEditForm() {
+      const currentUserEmail = localStorage.getItem("currentUserEmail");
+      const user = JSON.parse(
+        localStorage.getItem(`user_${currentUserEmail}`)
       );
+      editName.value = user.name;
+      editPassword.value = "";
+      editImagePreview.src = user.profilePic || defaultSignupPreviewSrc;
+      newProfilePicDataUrl = user.profilePic;
+    }
 
-      function handleFile(file) {
-        if (!file) return;
+    editProfileForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const currentUserEmail = localStorage.getItem("currentUserEmail");
+      let user = JSON.parse(localStorage.getItem(`user_${currentUserEmail}`));
 
-        if (!file.type.startsWith("video/")) {
-          showMessage("Please select a valid video file.");
-          return;
-        }
-
-        if (file.size > 100 * 1024 * 1024) {
-          showMessage("File size should be less than 100MB.");
-          return;
-        }
-
-        selectedVideoFile = file;
-        isDemoMode = false;
-        fileUploadArea.innerHTML = `
-          <div class="card-icon">✅</div>
-          <div class="card-content">
-            <div class="card-title">File Ready</div>
-            <div class="card-subtitle">${file.name}</div>
-          </div>
-        `;
-        showMessage("Video file uploaded successfully!", "success");
+      user.name = editName.value;
+      user.profilePic = newProfilePicDataUrl;
+      if (editPassword.value) {
+        user.password = editPassword.value;
       }
 
-      // Demo button
-      demoBtn.addEventListener("click", runDemo);
+      localStorage.setItem(`user_${currentUserEmail}`, JSON.stringify(user));
 
-      function runDemo() {
-        document.getElementById("athleteName").value = "Demo Athlete";
-        athleteNameInput.dispatchEvent(new Event("input"));
-        document.getElementById("athleteAge").value = "22";
-        document.getElementById("athleteSport").value = "cricket";
-        document
-          .getElementById("athleteSport")
-          .dispatchEvent(new Event("change"));
+      showApp(user);
+      renderProfilePage();
+      editProfileView.style.display = "none";
+      profileView.style.display = "block";
+      showInfoPopup("profileUpdateSuccessTitle", "profileUpdateSuccessText");
+    });
 
-        setTimeout(() => {
-          document.getElementById("athleteActivity").value = "bowling";
-          document.getElementById("athleteRegion").value = "Madhya Pradesh";
-          document.getElementById("athletePhone").value = "9876543210";
-        }, 100);
+    // --- MAIN ANALYSIS LOGIC ---
+    fileUploadArea.addEventListener("click", () => fileInput.click());
+    demoBtn.addEventListener("click", runDemo);
+    analyzeBtn.addEventListener("click", startAnalysis);
+    resetBtn.addEventListener("click", resetForm);
 
-        isDemoMode = true;
-        selectedVideoFile = null;
+    function startAnalysis() {
+      runAnalysis();
+    }
 
-        fileUploadArea.innerHTML = `
-          <div class="card-icon">🎬</div>
-          <div class="card-content">
-            <div class="card-title">Demo Mode</div>
-            <div class="card-subtitle">Using sample data</div>
-          </div>
-        `;
-
-        showMessage("Demo mode activated! Ready to analyze.", "success");
-      }
-
-      // Form validation
-      function validateForm() {
-        const requiredFields = [
-          "athleteName",
-          "athleteAge",
-          "athleteSport",
-          "athleteActivity",
-          "athleteRegion",
-        ];
-
-        for (const id of requiredFields) {
-          const field = document.getElementById(id);
-          if (!field.value.trim()) {
-            showMessage(
-              `Please fill in ${
-                field.placeholder ||
-                field.previousElementSibling?.textContent ||
-                "the required field"
-              }.`
-            );
-            field.focus();
-            return false;
-          }
-        }
-
-        // Age validation
-        const age = parseInt(document.getElementById("athleteAge").value);
-        if (age < 10 || age > 30) {
-          showMessage("Age must be between 10 and 30 years.");
-          return false;
-        }
-
-        return true;
-      }
-
-      // Main analysis function
-      analyzeBtn.addEventListener("click", startAnalysis);
-
-      async function startAnalysis() {
-        if (!validateForm()) return;
-
-        if (!isDemoMode && !selectedVideoFile) {
-          showMessage("Please upload a performance video or use demo mode.");
-          return;
-        }
-
-        setButtonState(true);
-        showLoader();
-
-        try {
-          const formData = new FormData();
-
-          // Add form data
-          formData.append(
-            "athleteName",
-            document.getElementById("athleteName").value
-          );
-          formData.append(
-            "athleteAge",
-            document.getElementById("athleteAge").value
-          );
-          formData.append(
-            "athleteSport",
-            document.getElementById("athleteSport").value
-          );
-          formData.append(
-            "athleteActivity",
-            document.getElementById("athleteActivity").value
-          );
-          formData.append(
-            "athleteRegion",
-            document.getElementById("athleteRegion").value
-          );
-          formData.append(
-            "athletePhone",
-            document.getElementById("athletePhone").value || ""
-          );
-
-          if (isDemoMode) {
-            formData.append("isDemo", "true");
-          } else if (selectedVideoFile) {
-            formData.append("videoFile", selectedVideoFile);
-          }
-
-          const response = await fetch(`${API_BASE_URL}/api/analyze`, {
-            method: "POST",
-            body: formData,
-          });
-
-          const result = await response.json();
-
-          if (!response.ok) {
-            throw new Error(result.error || "Analysis failed");
-          }
-
-          if (result.success) {
-            displayResults(result);
-            showMessage("Analysis completed successfully!", "success");
-          } else {
-            throw new Error(result.error || "Unknown error occurred");
-          }
-        } catch (error) {
-          console.error("Analysis error:", error);
-          showMessage(`Analysis failed: ${error.message}`);
-        } finally {
-          hideLoader();
-          setButtonState(false);
-        }
-      }
-
-      function displayResults(results) {
-        // Create score cards
-        const scoreCardsContainer = document.getElementById("scoreCards");
-        scoreCardsContainer.innerHTML = `
-          <div class="score-card overall-score">
-            <div class="score-value">${results.overall_score}</div>
-            <div class="score-label">Overall</div>
-          </div>
-        `;
-
-        // Add detailed scores
-        if (results.detailed_scores) {
-          Object.entries(results.detailed_scores).forEach(([key, value]) => {
-            const formattedKey = key.charAt(0).toUpperCase() + key.slice(1);
-            scoreCardsContainer.innerHTML += `
-              <div class="score-card">
-                <div class="score-value">${Math.round(value)}</div>
-                <div class="score-label">${formattedKey}</div>
-              </div>
-            `;
-          });
-        }
-
-        // Add recommendations
-        const recommendationsContainer = document.getElementById(
-          "recommendationsList"
-        );
-        if (results.recommendations && results.recommendations.length > 0) {
-          recommendationsContainer.innerHTML = results.recommendations
-            .map(
-              (rec) => `
-              <div class="results-list-item">
-                <div class="icon-wrapper">💡</div>
-                <div class="text">${rec}</div>
-              </div>
-            `
-            )
-            .join("");
-        }
-
-        // Add injury risk if available
-        if (results.injury_risk) {
-          recommendationsContainer.innerHTML += `
-            <div class="results-list-item">
-              <div class="icon-wrapper">🛡️</div>
-              <div class="text">Injury Risk: ${results.injury_risk}</div>
-            </div>
-          `;
-        }
-
-        // Show results section
-        mainContent.style.display = "none";
-        resultsSection.style.display = "block";
-      }
-
-      // Reset functionality
-      resetBtn.addEventListener("click", () => {
-        // Hide results section, show form again
-        resultsSection.style.display = "none";
-        mainContent.style.display = "block";
-
-        // Reset form
-        document.getElementById("athleteForm").reset();
-        greetingHeader.textContent = "Hello Athlete";
-
-        // Reset file state
-        selectedVideoFile = null;
-        isDemoMode = false;
-
-        // Restore file upload card UI
-        fileUploadArea.innerHTML = `
-      <div class="card-content">
-        <button>
-          <div class="svg-wrapper-1">
-            <div class="svg-wrapper">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="30"
-                height="30"
-                class="icon"
-              >
-                <path
-                  d="M22,15.04C22,17.23 20.24,19 18.07,19H5.93C3.76,19 2,17.23 2,15.04C2,13.07 3.43,11.44 5.31,11.14C5.28,11 5.27,10.86 5.27,10.71C5.27,9.33 6.38,8.2 7.76,8.2C8.37,8.2 8.94,8.43 9.37,8.8C10.14,7.05 11.13,5.44 13.91,5.44C17.28,5.44 18.87,8.06 18.87,10.83C18.87,10.94 18.87,11.06 18.86,11.17C20.65,11.54 22,13.13 22,15.04Z"
-                ></path>
-              </svg>
-            </div>
-          </div>
-          <span>Upload</span>
-        </button>
-      </div>
-      <input type="file" id="videoFile" accept="video/*" style="display: none" />
-    `;
-
-        // Re-bind the input event since we re-created the file input
-        const newFileInput = fileUploadArea.querySelector("#videoFile");
-        newFileInput.addEventListener("change", (e) =>
-          handleFile(e.target.files[0])
-        );
-      });
-
-      function resetForm() {
-        document.getElementById("athleteForm").reset();
-        athleteNameInput.dispatchEvent(new Event("input")); // Reset greeting
-        selectedVideoFile = null;
-
-        resultsSection.style.display = "none";
-        mainContent.style.display = "block";
-
-        fileUploadArea.innerHTML = `<div class="card-icon">📹</div><div class="card-content"><div class="card-title">Upload Video</div><div class="card-subtitle">Drag & Drop</div></div>`;
-        document.getElementById("athleteActivity").innerHTML =
-          '<option value="">Select Activity</option>';
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-
-      const sportActivities = {
-        cricket: ["Bowling", "Batting", "Fielding"],
-        football: ["Shooting", "Dribbling", "Goalkeeping"],
-        athletics: ["Running", "Jumping", "Throwing"],
-      };
+    function runDemo() {
+      document.getElementById("athleteName").value = "Demo Athlete";
+      document.getElementById("athleteSport").value = "cricket";
       document
         .getElementById("athleteSport")
-        .addEventListener("change", function () {
-          const sport = this.value;
-          const activitySelect = document.getElementById("athleteActivity");
-          activitySelect.innerHTML =
-            '<option value="">Select Activity</option>';
-          if (sport && sportActivities[sport]) {
-            sportActivities[sport].forEach((activity) => {
-              const option = document.createElement("option");
-              option.value = activity.toLowerCase();
-              option.textContent = activity;
-              activitySelect.appendChild(option);
-            });
-          }
-        });
-    </script>
-  </body>
-</html>
+        .dispatchEvent(new Event("change"));
+      setTimeout(() => {
+        document.getElementById("athleteActivity").value = "bowling";
+      }, 100);
+      selectedVideoFile = { name: "demo_video.mp4" };
+      runAnalysis(true);
+    }
 
+    function runAnalysis(isDemo = false) {
+      const sport = document.getElementById("athleteSport").value;
+      const activity = document.getElementById("athleteActivity").value;
+
+      if (!sport || !activity) {
+        showInfoPopup("errorTitle", "Please select sport and activity");
+        return;
+      }
+
+      fullScreenLoader.style.display = "flex";
+      mainAppContent.style.display = "none";
+      resultsSection.style.display = "none";
+
+      setTimeout(() => {
+        const mockResults = {
+          overall_score: Math.round(65 + Math.random() * 30),
+          scores: {
+            Technique: Math.round(65 + Math.random() * 30),
+            Posture: Math.round(65 + Math.random() * 30),
+            Stability: Math.round(65 + Math.random() * 30),
+          },
+          recommendations: getSportSpecificRecommendations(sport, activity),
+          sportMetrics: generateSportSpecificMetrics(sport, activity)
+        };
+        saveHistory(mockResults);
+        fullScreenLoader.style.display = "none";
+        displayResults(mockResults);
+      }, 2500);
+    }
+
+    function getSportSpecificRecommendations(sport, activity) {
+      const recommendations = {
+        cricket: {
+          bowling: [
+            "Work on your bowling action consistency for better line and length.",
+            "Focus on follow-through to generate more pace and accuracy.",
+            "Practice target bowling to improve precision."
+          ],
+          batting: [
+            "Improve your batting stance for better balance.",
+            "Work on timing and shot selection.",
+            "Practice footwork drills for better positioning."
+          ]
+        },
+        football: {
+          shooting: [
+            "Focus on shot placement over power for better accuracy.",
+            "Practice shooting from different angles and distances.",
+            "Work on your follow-through for consistent ball contact."
+          ],
+          dribbling: [
+            "Improve close ball control with cone drills.",
+            "Practice change of pace and direction.",
+            "Work on using both feet equally for better unpredictability."
+          ]
+        },
+        athletics: {
+          running: [
+            "Focus on maintaining consistent stride length.",
+            "Work on your running posture and arm swing.",
+            "Practice breathing techniques for endurance."
+          ],
+          jumping: [
+            "Improve your takeoff technique for better height/distance.",
+            "Work on approach speed and timing.",
+            "Strengthen leg muscles for more explosive power."
+          ]
+        }
+      };
+
+      return recommendations[sport]?.[activity] || [
+        "Focus on core strengthening for better stability.",
+        "Practice slow-motion drills to refine technique.",
+        "Include flexibility exercises in your warm-ups."
+      ];
+    }
+
+    function saveHistory(results) {
+      const currentUserEmail = localStorage.getItem("currentUserEmail");
+      if (!currentUserEmail) return;
+      const historyEntry = {
+        athleteName: document.getElementById("athleteName").value,
+        sport: document.getElementById("athleteSport").value,
+        date: new Date().toLocaleDateString(),
+        results: results,
+      };
+      let history =
+        JSON.parse(localStorage.getItem(`history_${currentUserEmail}`)) || [];
+      history.push(historyEntry);
+      localStorage.setItem(
+        `history_${currentUserEmail}`,
+        JSON.stringify(history)
+      );
+    }
+
+    function displayResults(results) {
+      const sport = document.getElementById("athleteSport").value;
+
+      scoreCardsContainer.innerHTML = `<div class="score-card overall-score"><div class="score-value">${results.overall_score}</div><div class="score-label" data-lang="overall">Overall</div></div>`;
+      for (const [key, value] of Object.entries(results.scores)) {
+        scoreCardsContainer.innerHTML += `<div class="score-card"><div class="score-value">${value}</div><div class="score-label">${key}</div></div>`;
+      }
+
+      recommendationsList.innerHTML = results.recommendations
+        .map((rec) => `<p>${rec}</p>`)
+        .join("");
+
+      // Update sport-specific metrics if available
+      if (results.sportMetrics) {
+        updateSportMetrics(sport, results.sportMetrics);
+      }
+
+      if (currentChart) {
+        currentChart.destroy();
+      }
+      const ctx = resultsChartCanvas.getContext("2d");
+      const isDark = document.body.classList.contains("dark-mode");
+      const gridColor = isDark
+        ? "rgba(255, 255, 255, 0.2)"
+        : "rgba(0, 0, 0, 0.1)";
+      const ticksColor = isDark ? "#a0a0b0" : "#6b7280";
+
+      currentChart = new Chart(ctx, {
+        type: "radar",
+        data: {
+          labels: ["Overall", ...Object.keys(results.scores)],
+          datasets: [
+            {
+              label: "Score",
+              data: [results.overall_score, ...Object.values(results.scores)],
+              backgroundColor: "rgba(10, 132, 255, 0.2)",
+              borderColor: "rgba(10, 132, 255, 1)",
+              borderWidth: 2,
+              pointBackgroundColor: "rgba(10, 132, 255, 1)",
+              pointBorderColor: "#fff",
+              pointHoverBackgroundColor: "#fff",
+              pointHoverBorderColor: "rgba(10, 132, 255, 1)",
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            r: {
+              angleLines: { color: gridColor },
+              grid: { color: gridColor },
+              pointLabels: {
+                color: ticksColor,
+                font: { size: 12, weight: "bold" },
+              },
+              ticks: {
+                color: ticksColor,
+                backdropColor: "transparent",
+                stepSize: 20,
+              },
+              suggestedMin: 0,
+              suggestedMax: 100,
+            },
+          },
+        },
+      });
+
+      mainAppContent.style.display = "none";
+      profileSection.style.display = "none";
+      resultsSection.style.display = "block";
+      backBtn.style.display = "block";
+      currentView = "results";
+      updateLanguage(localStorage.getItem("language") || "en");
+    }
+
+    function resetForm() {
+      if (currentChart) {
+        currentChart.destroy();
+      }
+      document.getElementById("athleteForm").reset();
+      selectedVideoFile = null;
+      resetToMainView();
+      document.getElementById("athleteActivity").innerHTML =
+        '<option value="" data-lang="selectActivity">Select Activity</option>';
+      updateLanguage(localStorage.getItem("language") || "en");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    const sportActivities = {
+      cricket: ["Bowling", "Batting"],
+      football: ["Shooting", "Dribbling"],
+      athletics: ["Running", "Jumping"],
+    };
+    document
+      .getElementById("athleteSport")
+      .addEventListener("change", function () {
+        const sport = this.value;
+        const activitySelect = document.getElementById("athleteActivity");
+        activitySelect.innerHTML =
+          '<option value="" data-lang="selectActivity">Select Activity</option>';
+        if (sport && sportActivities[sport]) {
+          sportActivities[sport].forEach((activity) => {
+            const option = document.createElement("option");
+            option.value = activity.toLowerCase();
+            option.textContent = activity;
+            activitySelect.appendChild(option);
+          });
+          // Show sport-specific analysis panel
+          showSportAnalysis(sport);
+        }
+        updateLanguage(localStorage.getItem("language") || "en");
+      });
+
+    // --- MODAL, HISTORY DETAILS, DARK MODE, LANGUAGE ---
+    historyListContainer.addEventListener("click", function (event) {
+      if (event.target.classList.contains("history-item-delete-btn")) {
+        event.stopPropagation();
+        itemIndexToDelete = parseInt(
+          event.target.getAttribute("data-delete-index"),
+          10
+        );
+        confirmModal.style.display = "flex";
+      } else if (event.target.closest(".history-item")) {
+        const itemIndex = parseInt(
+          event.target
+            .closest(".history-item")
+            .getAttribute("data-history-index"),
+          10
+        );
+        showDetailedHistory(itemIndex);
+      }
+    });
+    cancelDeleteBtn.addEventListener("click", () => {
+      confirmModal.style.display = "none";
+    });
+    confirmDeleteBtn.addEventListener("click", () => {
+      if (itemIndexToDelete !== null) {
+        const currentUserEmail = localStorage.getItem("currentUserEmail");
+        let history =
+          JSON.parse(localStorage.getItem(`history_${currentUserEmail}`)) ||
+          [];
+        history.splice(itemIndexToDelete, 1);
+        localStorage.setItem(
+          `history_${currentUserEmail}`,
+          JSON.stringify(history)
+        );
+        renderProfilePage();
+      }
+      confirmModal.style.display = "none";
+    });
+
+    function showDetailedHistory(index) {
+      const currentUserEmail = localStorage.getItem("currentUserEmail");
+      const history =
+        JSON.parse(localStorage.getItem(`history_${currentUserEmail}`)) || [];
+      const item = history[index];
+      if (!item) return;
+
+      detailedScoreCards.innerHTML = `<div class="score-card"><div class="score-value">${item.results.overall_score}</div><div class="score-label" data-lang="overall">Overall</div></div>`;
+      for (const [key, value] of Object.entries(item.results.scores)) {
+        detailedScoreCards.innerHTML += `<div class="score-card"><div class="score-value">${value}</div><div class="score-label">${key}</div></div>`;
+      }
+      detailedRecommendations.innerHTML = item.results.recommendations
+        .map((rec) => `<p style="padding: 0.5rem 0;">- ${rec}</p>`)
+        .join("");
+
+      mainAppContent.style.display = "none";
+      profileSection.style.display = "none";
+      detailedHistoryView.style.display = "block";
+      backBtn.style.display = "block";
+      currentView = "detailedHistory";
+      updateLanguage(localStorage.getItem("language") || "en");
+    }
+
+    function applyTheme(theme) {
+      if (theme === "dark") {
+        document.body.classList.add("dark-mode");
+        darkModeToggle.checked = true;
+      } else {
+        document.body.classList.remove("dark-mode");
+        darkModeToggle.checked = false;
+      }
+    }
+    darkModeToggle.addEventListener("change", () => {
+      const newTheme = darkModeToggle.checked ? "dark" : "light";
+      localStorage.setItem("theme", newTheme);
+      applyTheme(newTheme);
+    });
+
+    const translations = {
+      en: {
+        ok: "OK",
+        loginErrorTitle: "Login Failed",
+        loginErrorText: "Invalid email or password. Please try again.",
+        signupSuccessTitle: "Signup Successful",
+        signupSuccessText:
+          "Your account has been created. Please log in to continue.",
+        profileUpdateSuccessTitle: "Profile Updated",
+        profileUpdateSuccessText:
+          "Your profile details have been saved successfully.",
+        errorTitle: "Error",
+        fillAllFields: "Please fill in all required fields.",
+        welcomeBack: "Welcome Back!",
+        password: "Password",
+        login: "Login",
+        needAccount: "Need an account?",
+        signUp: "Sign Up",
+        createAccount: "Create Account",
+        uploadPhoto: "Upload Photo",
+        fullName: "Full Name",
+        haveAccount: "Already have an account?",
+        athleteDetails: "Athlete Details",
+        athleteName: "Athlete Name",
+        age: "Age",
+        selectSport: "Select Sport",
+        selectActivity: "Select Activity",
+        selectState: "Select State/UT",
+        uploadVideo: "Upload Video",
+        runDemo: "Run Demo",
+        startAnalysis: "Start Analysis",
+        analysisResults: "Analysis Results",
+        analyzeAnother: "Analyze Another",
+        analysisDetails: "Analysis Details",
+        recommendations: "Recommendations",
+        scoreBreakdown: "Score Breakdown",
+        overall: "Overall",
+        darkMode: "Dark Mode",
+        language: "Language",
+        analysisHistory: "Analysis History",
+        noHistory: "No analysis history found.",
+        editProfile: "Edit Profile",
+        logout: "Logout",
+        changePhoto: "Change Photo",
+        newPasswordOptional: "New Password (optional)",
+        cancel: "Cancel",
+        saveChanges: "Save Changes",
+        confirmDeleteTitle: "Confirm Deletion",
+        confirmDeleteText:
+          "Are you sure you want to delete this analysis entry? This action cannot be undone.",
+        delete: "Delete",
+        home: "Home",
+        history: "History",
+        profile: "Profile",
+        totalAnalyses: "Total Analyses",
+        avgScore: "Avg Score",
+        bestScore: "Best Score",
+      },
+      hi: {
+        ok: "ठीक है",
+        loginErrorTitle: "लॉगिन विफल",
+        loginErrorText: "अमान्य ईमेल या पासवर्ड। कृपया पुन प्रयास करें।",
+        signupSuccessTitle: "साइन अप सफल",
+        signupSuccessText:
+          "आपका खाता बन गया है। जारी रखने के लिए कृपया लॉग इन करें।",
+        profileUpdateSuccessTitle: "प्रोफ़ाइल अपडेट की गई",
+        profileUpdateSuccessText:
+          "आपकी प्रोफ़ाइल विवरण सफलतापूर्वक सहेज लिए गए हैं।",
+        errorTitle: "त्रुटि",
+        fillAllFields: "कृपया सभी आवश्यक फ़ील्ड भरें।",
+        welcomeBack: "वापस स्वागत है!",
+        password: " पासवर्ड",
+        login: "लॉग इन करें",
+        needAccount: "खाता नहीं है?",
+        signUp: "साइन अप करें",
+        createAccount: "खाता बनाएं",
+        uploadPhoto: "फोटो अपलोड करें",
+        fullName: "पूरा नाम",
+        haveAccount: "पहले से ही एक खाता है?",
+        athleteDetails: "एथलीट विवरण",
+        athleteName: "एथलीट का नाम",
+        age: "उम्र",
+        selectSport: "खेल चुनें",
+        selectActivity: "गतिविधि चुनें",
+        selectState: "राज्य/केंद्र शासित प्रदेश चुनें",
+        uploadVideo: "वीडियो अपलोड करें",
+        runDemo: "डेमो चलाएं",
+        startAnalysis: "विश्लेषण शुरू करें",
+        analysisResults: "विश्लेषण परिणाम",
+        analyzeAnother: "दूसरा विश्लेषण करें",
+        analysisDetails: "विश्लेषण विवरण",
+        recommendations: "सिफारिशें",
+        scoreBreakdown: "स्कोर का विवरण",
+        overall: "कुल मिलाकर",
+        darkMode: "डार्क मोड",
+        language: "भाषा",
+        analysisHistory: "विश्लेषण इतिहास",
+        noHistory: "कोई विश्लेषण इतिहास नहीं मिला।",
+        editProfile: "प्रोफ़ाइल संपादित करें",
+        logout: "लॉग आउट",
+        changePhoto: "फोटो बदलें",
+        newPasswordOptional: "नया पासवर्ड (वैकल्पिक)",
+        cancel: "रद्द करें",
+        saveChanges: "बदलाव सहेजें",
+        confirmDeleteTitle: "हटाने की पुष्टि करें",
+        confirmDeleteText:
+          "क्या आप वाकई इस विश्लेषण प्रविष्टि को हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।",
+        delete: "हटाएं",
+        home: "होम",
+        history: "इतिहास",
+        profile: "प्रोफ़ाइल",
+        totalAnalyses: "कुल विश्लेषण",
+        avgScore: "औसत स्कोर",
+        bestScore: "सर्वोत्तम स्कोर",
+      },
+    };
+
+    function updateLanguage(lang) {
+      localStorage.setItem("language", lang);
+      languageSelector.value = lang;
+      document.querySelectorAll("[data-lang]").forEach((el) => {
+        const key = el.getAttribute("data-lang");
+        if (translations[lang][key]) {
+          el.textContent = translations[lang][key];
+        }
+      });
+      document.querySelectorAll("[data-lang-placeholder]").forEach((el) => {
+        const key = el.getAttribute("data-lang-placeholder");
+        if (translations[lang][key]) {
+          el.placeholder = translations[lang][key];
+        }
+      });
+    }
+
+    languageSelector.addEventListener("change", (e) =>
+      updateLanguage(e.target.value)
+    );
+
+    // --- ACCESSIBILITY & KEYBOARD NAVIGATION ---
+    function setupAccessibility() {
+      // Add ARIA labels and roles
+      document.querySelectorAll('button').forEach(btn => {
+        if (!btn.getAttribute('aria-label') && !btn.textContent.trim()) {
+          btn.setAttribute('aria-label', 'Button');
+        }
+      });
+
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        // ESC key to close modals
+        if (e.key === 'Escape') {
+          if (tutorialOverlay.style.display === 'flex') {
+            closeTutorial();
+          }
+          if (infoModal.style.display === 'flex') {
+            infoModal.style.display = 'none';
+          }
+          if (confirmModal.style.display === 'flex') {
+            confirmModal.style.display = 'none';
+          }
+        }
+
+        // Enter key for tutorial navigation
+        if (e.key === 'Enter' && tutorialOverlay.style.display === 'flex') {
+          if (e.target === tutorialNext) {
+            tutorialNext.click();
+          }
+        }
+
+
+      });
+
+      // Focus management for modals
+      tutorialOverlay.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+          const focusableElements = tutorialOverlay.querySelectorAll('button');
+          const firstElement = focusableElements[0];
+          const lastElement = focusableElements[focusableElements.length - 1];
+
+          if (e.shiftKey && document.activeElement === firstElement) {
+            e.preventDefault();
+            lastElement.focus();
+          } else if (!e.shiftKey && document.activeElement === lastElement) {
+            e.preventDefault();
+            firstElement.focus();
+          }
+        }
+      });
+    }
+
+    // --- PWA FUNCTIONALITY ---
+    function setupPWA() {
+      // Register service worker for PWA functionality
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(err => {
+          console.log('Service worker registration failed:', err);
+        });
+      }
+
+      // Add to home screen prompt
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+
+        // Show install button or banner
+        const installBtn = document.createElement('button');
+        installBtn.textContent = 'Install App';
+        installBtn.className = 'action-button';
+        installBtn.style.position = 'fixed';
+        installBtn.style.bottom = '20px';
+        installBtn.style.left = '20px';
+        installBtn.style.zIndex = '1000';
+
+        installBtn.addEventListener('click', () => {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+              console.log('User accepted the install prompt');
+            }
+            deferredPrompt = null;
+            installBtn.remove();
+          });
+        });
+
+        document.body.appendChild(installBtn);
+
+        // Auto-hide after 10 seconds
+        setTimeout(() => {
+          if (installBtn.parentNode) {
+            installBtn.remove();
+          }
+        }, 10000);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const savedTheme = localStorage.getItem("theme") || "light";
+      const savedLang = localStorage.getItem("language") || "en";
+      applyTheme(savedTheme);
+      updateLanguage(savedLang);
+
+      // Initialize new features
+      setupAccessibility();
+      setupPWA();
+
+      // Show tutorial for new users
+      const tutorialCompleted = localStorage.getItem("tutorialCompleted");
+      if (!tutorialCompleted) {
+        setTimeout(() => {
+          showTutorial();
+        }, 1000);
+      }
+
+      const currentUserEmail = localStorage.getItem("currentUserEmail");
+      if (currentUserEmail) {
+        const storedUser = JSON.parse(
+          localStorage.getItem(`user_${currentUserEmail}`)
+        );
+        if (storedUser) {
+          showApp(storedUser);
+        }
+      } else {
+        authContainer.style.display = "block";
+        appContainer.style.display = "none";
+
+      }
+    });
+  </script>
+</body>
+
+</html>
