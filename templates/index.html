@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sports AI Analysis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* General Reset & Variables */
+      :root {
+        --bg-gradient-start: #f8f8fa;
+        --bg-gradient-end: #eae9f2;
+        --main-bg-color: #fcfcfc;
+        --text-primary: #1a1a2e;
+        --text-secondary: #6b7280;
+        --card-purple: #e0d9fc;
+        --card-yellow: #fdf2d1;
+        --card-dark: #2c2c36;
+        --accent-blue: #0a84ff;
+        --border-color: #e8e8ed;
+        --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.05);
+        --shadow-medium: 0 4px 15px rgba(0, 0, 0, 0.08);
+        --border-radius-lg: 20px;
+        --border-radius-md: 14px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(
+          135deg,
+          var(--bg-gradient-start),
+          var(--bg-gradient-end)
+        );
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 1rem;
+        color: var(--text-primary);
+      }
+
+      /* App Container */
+      .app-container {
+        width: 100%;
+        max-width: 420px;
+        background-color: var(--main-bg-color);
+        border-radius: 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Top Bar/Header */
+      .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 1.5rem 0.5rem;
+      }
+      .app-logo {
+        font-weight: 600;
+        font-size: 1.1em;
+      }
+      .user-avatar img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: var(--shadow-light);
+      }
+
+      /* Main Content Area */
+      .content-area {
+        padding: 0 1.5rem 1.5rem;
+      }
+
+      .greeting {
+        margin-bottom: 1.5rem;
+        padding-top: 1rem;
+      }
+      .greeting h1 {
+        font-size: 2.2em;
+        font-weight: 800;
+      }
+
+      /* Section Styling */
+      .section {
+        margin-bottom: 1.5rem;
+      }
+      .section-title {
+        font-size: 1.2em;
+        font-weight: 700;
+        margin-bottom: 1rem;
+      }
+
+      /* Form Styling */
+      .form-control {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-md);
+        font-size: 0.95em;
+        font-family: "Inter", sans-serif;
+        background-color: #f7f7f7;
+        transition: all 0.2s ease;
+      }
+      .form-control:focus {
+        outline: none;
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.1);
+      }
+      .form-group {
+        margin-bottom: 1rem;
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .phone-input-container {
+        display: flex;
+      }
+      .phone-prefix {
+        padding: 0.85rem;
+        background-color: #e8e8ed;
+        border: 1px solid var(--border-color);
+        border-right: none;
+        border-radius: var(--border-radius-md) 0 0 var(--border-radius-md);
+      }
+      #athletePhone {
+        border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+      }
+
+      /* Error and success messages */
+      .message {
+        padding: 1rem;
+        border-radius: var(--border-radius-md);
+        margin-bottom: 1rem;
+        font-size: 0.9em;
+      }
+      .error-message {
+        background-color: #fee;
+        color: #c53030;
+        border: 1px solid #fed7d7;
+      }
+      .success-message {
+        background-color: #f0fff4;
+        color: #2d7d32;
+        border: 1px solid #c6f6d5;
+      }
+
+      /* Vertical Cards Grid */
+      .cards-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .card {
+        padding: 1.2rem;
+        border-radius: var(--border-radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        text-align: left;
+      }
+
+      .card-icon {
+        font-size: 1.8em;
+        margin-right: 1rem;
+      }
+      .card-title {
+        font-size: 1.1em;
+        font-weight: 600;
+      }
+      .card-subtitle {
+        font-size: 0.85em;
+        color: rgba(0, 0, 0, 0.6);
+      }
+
+      /* Specific Card Styles */
+      .card.purple {
+        background-color: var(--card-purple);
+      }
+      .card.dark {
+        background-color: var(--card-dark);
+        color: white;
+      }
+      .card.dark .card-subtitle {
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .file-upload-area {
+        background-color: var(--card-dark);
+        color: white;
+      }
+      .file-upload-area.dragover {
+        border: 2px dashed var(--accent-blue);
+      }
+
+      /* Results Section */
+      .results-list-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border-color);
+      }
+      .results-list-item:last-child {
+        border-bottom: none;
+      }
+      .results-list-item .icon-wrapper {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: #e8e8ed;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.1em;
+        margin-right: 1rem;
+        color: var(--text-primary);
+      }
+      .results-list-item .text {
+        flex-grow: 1;
+        font-size: 0.95em;
+      }
+
+      .score-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .score-card {
+        background-color: #f0f0f5;
+        padding: 1rem;
+        border-radius: var(--border-radius-md);
+        text-align: center;
+      }
+      .score-card.overall-score {
+        background-color: var(--accent-blue);
+        color: white;
+      }
+      .score-card .score-value {
+        font-size: 1.8em;
+        font-weight: 700;
+      }
+      .score-card .score-label {
+        font-size: 0.85em;
+        opacity: 0.8;
+      }
+      .score-card.overall-score .score-label {
+        opacity: 1;
+      }
+
+      /* Full Screen Loader */
+      .loader-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(5px);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        color: white;
+        flex-direction: column;
+        text-align: center;
+      }
+      .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid white;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin-bottom: 1rem;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Button Styles */
+      button {
+        font-family: inherit;
+        font-size: 20px;
+        background: #212121;
+        color: white;
+        fill: rgb(155, 153, 153);
+        padding: 0.7em 1em;
+        padding-left: 0.9em;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        border: none;
+        border-radius: 15px;
+        font-weight: 1000;
+      }
+
+      button span {
+        display: block;
+        margin-left: 0.3em;
+        transition: all 0.3s ease-in-out;
+      }
+
+      button svg {
+        display: block;
+        transform-origin: center center;
+        transition: transform 0.3s ease-in-out;
+      }
+
+      button:hover {
+        background: #000;
+      }
+
+      button:hover .svg-wrapper {
+        transform: scale(1.25);
+        transition: 0.5s linear;
+      }
+
+      button:hover svg {
+        transform: translateX(1.2em) scale(1.1);
+        fill: #fff;
+      }
+
+      button:hover span {
+        opacity: 0;
+        transition: 0.5s linear;
+      }
+
+      button:active {
+        transform: scale(0.95);
+      }
+
+      .cta {
+        position: relative;
+        margin: auto;
+        padding: 12px 18px;
+        transition: all 0.2s ease;
+        border: none;
+        background: none;
+        cursor: pointer;
+      }
+
+      .cta:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: block;
+        border-radius: 50px;
+        background: #dfceff;
+        width: 45px;
+        height: 45px;
+        transition: all 0.3s ease;
+      }
+
+      .cta span {
+        position: relative;
+        font-family: "Ubuntu", sans-serif;
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        color: #6a32db;
+      }
+
+      .cta svg {
+        position: relative;
+        top: 0;
+        margin-left: 10px;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke: #6a32db;
+        stroke-width: 2;
+        transform: translateX(-5px);
+        transition: all 0.3s ease;
+      }
+
+      .cta:hover:before {
+        width: 100%;
+        background: #dfceff;
+      }
+
+      .cta:hover svg {
+        transform: translateX(0);
+      }
+
+      .cta:active {
+        transform: scale(0.95);
+      }
+
+      .action-button.reset {
+        background-color: #6b7280;
+        margin-top: 2rem;
+      }
+
+      .disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="loader-overlay" id="fullScreenLoader">
+      <div class="spinner"></div>
+      <p>Analyzing Performance...</p>
+    </div>
+
+    <div class="app-container">
+      <div class="top-bar">
+        <div class="app-logo">Sports AI</div>
+        <div class="user-avatar">
+          <img
+            src="https://static.vecteezy.com/system/resources/previews/011/557/890/original/cricket-player-avatar-illustration-png.png"
+            alt="User Avatar"
+          />
+        </div>
+      </div>
+
+      <div class="content-area">
+        <div class="greeting">
+          <h1 id="greetingHeader">Hello Athlete</h1>
+        </div>
+
+        <div id="messageArea"></div>
+
+        <div id="mainContent">
+          <div class="section" id="formSection">
+            <h2 class="section-title">Athlete Details</h2>
+            <form id="athleteForm" onsubmit="return false;">
+              <div class="form-group">
+                <input
+                  type="text"
+                  id="athleteName"
+                  class="form-control"
+                  required
+                  placeholder="Athlete Name"
+                />
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <input
+                    type="number"
+                    id="athleteAge"
+                    class="form-control"
+                    min="10"
+                    max="30"
+                    required
+                    placeholder="Age"
+                  />
+                </div>
+                <div class="form-group">
+                  <select id="athleteSport" class="form-control" required>
+                    <option value="">Select Sport</option>
+                    <option value="cricket">Cricket</option>
+                    <option value="football">Football</option>
+                    <option value="athletics">Athletics</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <select id="athleteActivity" class="form-control" required>
+                    <option value="">Select Activity</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <select id="athleteRegion" class="form-control" required>
+                    <option value="">Select State/UT</option>
+                    <option value="Andhra Pradesh">Andhra Pradesh</option>
+                    <option value="Delhi">Delhi</option>
+                    <option value="Gujarat">Gujarat</option>
+                    <option value="Haryana">Haryana</option>
+                    <option value="Karnataka">Karnataka</option>
+                    <option value="Madhya Pradesh">Madhya Pradesh</option>
+                    <option value="Maharashtra">Maharashtra</option>
+                    <option value="Punjab">Punjab</option>
+                    <option value="Rajasthan">Rajasthan</option>
+                    <option value="Uttar Pradesh">Uttar Pradesh</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group phone-input-container">
+                <span class="phone-prefix">+91</span>
+                <input
+                  type="tel"
+                  id="athletePhone"
+                  class="form-control"
+                  pattern="[0-9]{10}"
+                  placeholder="Phone Number"
+                />
+              </div>
+            </form>
+          </div>
+
+          <div class="section">
+            <div class="cards-grid">
+              <div class="card" id="fileUploadArea">
+                <div class="card-content">
+                  <button>
+                    <div class="svg-wrapper-1">
+                      <div class="svg-wrapper">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          width="30"
+                          height="30"
+                          class="icon"
+                        >
+                          <path
+                            d="M22,15.04C22,17.23 20.24,19 18.07,19H5.93C3.76,19 2,17.23 2,15.04C2,13.07 3.43,11.44 5.31,11.14C5.28,11 5.27,10.86 5.27,10.71C5.27,9.33 6.38,8.2 7.76,8.2C8.37,8.2 8.94,8.43 9.37,8.8C10.14,7.05 11.13,5.44 13.91,5.44C17.28,5.44 18.87,8.06 18.87,10.83C18.87,10.94 18.87,11.06 18.86,11.17C20.65,11.54 22,13.13 22,15.04Z"
+                          ></path>
+                        </svg>
+                      </div>
+                    </div>
+                    <span>Upload</span>
+                  </button>
+                </div>
+                <input
+                  type="file"
+                  id="videoFile"
+                  accept="video/*"
+                  style="display: none"
+                />
+              </div>
+              <div class="card purple" id="demoBtn">
+                <div class="card-icon">🎯</div>
+                <div class="card-content">
+                  <div class="card-title">Run Demo</div>
+                  <div class="card-subtitle">Use sample data</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section" id="submitSection">
+            <button class="cta action-button" id="analyzeBtn">
+              <span>Get Started</span>
+              <svg width="15px" height="10px" viewBox="0 0 13 10">
+                <path d="M1,5 L11,5"></path>
+                <polyline points="8 1 12 5 8 9"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="section" id="resultsSection" style="display: none">
+          <h2 class="section-title">Analysis Results</h2>
+          <div class="score-cards" id="scoreCards"></div>
+          <div id="recommendationsList"></div>
+          <button class="action-button reset" id="resetBtn">
+            Analyze Another
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Configuration
+      const API_BASE_URL = "http://localhost:5000"; // Change this if your Flask server runs on a different port
+
+      // DOM Elements
+      const athleteNameInput = document.getElementById("athleteName");
+      const greetingHeader = document.getElementById("greetingHeader");
+      const messageArea = document.getElementById("messageArea");
+
+      const fileUploadArea = document.getElementById("fileUploadArea");
+      const fileInput = document.getElementById("videoFile");
+      const demoBtn = document.getElementById("demoBtn");
+      const analyzeBtn = document.getElementById("analyzeBtn");
+      const resetBtn = document.getElementById("resetBtn");
+
+      const mainContent = document.getElementById("mainContent");
+      const resultsSection = document.getElementById("resultsSection");
+      const fullScreenLoader = document.getElementById("fullScreenLoader");
+
+      let selectedVideoFile = null;
+      let isDemoMode = false;
+
+      // Utility Functions
+      function showMessage(message, type = "error") {
+        messageArea.innerHTML = `<div class="message ${type}-message">${message}</div>`;
+        setTimeout(() => {
+          messageArea.innerHTML = "";
+        }, 5000);
+      }
+
+      function showLoader() {
+        fullScreenLoader.style.display = "flex";
+      }
+
+      function hideLoader() {
+        fullScreenLoader.style.display = "none";
+      }
+
+      function setButtonState(disabled) {
+        analyzeBtn.classList.toggle("disabled", disabled);
+      }
+
+      // Event Listeners
+      athleteNameInput.addEventListener("input", () => {
+        const name = athleteNameInput.value.trim();
+        if (name) {
+          greetingHeader.textContent = `Hello ${name}`;
+        } else {
+          greetingHeader.textContent = "Hello Athlete";
+        }
+      });
+
+      // File upload handling
+      fileUploadArea.addEventListener("click", () => {
+        if (!isDemoMode) {
+          fileInput.click();
+        }
+      });
+
+      // Drag and drop functionality
+      ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+        fileUploadArea.addEventListener(
+          eventName,
+          (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          },
+          false
+        );
+      });
+
+      ["dragenter", "dragover"].forEach((eventName) => {
+        fileUploadArea.addEventListener(
+          eventName,
+          () => fileUploadArea.classList.add("dragover"),
+          false
+        );
+      });
+
+      ["dragleave", "drop"].forEach((eventName) => {
+        fileUploadArea.addEventListener(
+          eventName,
+          () => fileUploadArea.classList.remove("dragover"),
+          false
+        );
+      });
+
+      fileUploadArea.addEventListener(
+        "drop",
+        (e) => handleFile(e.dataTransfer.files[0]),
+        false
+      );
+
+      fileInput.addEventListener("change", (e) =>
+        handleFile(e.target.files[0])
+      );
+
+      function handleFile(file) {
+        if (!file) return;
+
+        if (!file.type.startsWith("video/")) {
+          showMessage("Please select a valid video file.");
+          return;
+        }
+
+        if (file.size > 100 * 1024 * 1024) {
+          showMessage("File size should be less than 100MB.");
+          return;
+        }
+
+        selectedVideoFile = file;
+        isDemoMode = false;
+        fileUploadArea.innerHTML = `
+          <div class="card-icon">✅</div>
+          <div class="card-content">
+            <div class="card-title">File Ready</div>
+            <div class="card-subtitle">${file.name}</div>
+          </div>
+        `;
+        showMessage("Video file uploaded successfully!", "success");
+      }
+
+      // Demo button
+      demoBtn.addEventListener("click", runDemo);
+
+      function runDemo() {
+        document.getElementById("athleteName").value = "Demo Athlete";
+        athleteNameInput.dispatchEvent(new Event("input"));
+        document.getElementById("athleteAge").value = "22";
+        document.getElementById("athleteSport").value = "cricket";
+        document
+          .getElementById("athleteSport")
+          .dispatchEvent(new Event("change"));
+
+        setTimeout(() => {
+          document.getElementById("athleteActivity").value = "bowling";
+          document.getElementById("athleteRegion").value = "Madhya Pradesh";
+          document.getElementById("athletePhone").value = "9876543210";
+        }, 100);
+
+        isDemoMode = true;
+        selectedVideoFile = null;
+
+        fileUploadArea.innerHTML = `
+          <div class="card-icon">🎬</div>
+          <div class="card-content">
+            <div class="card-title">Demo Mode</div>
+            <div class="card-subtitle">Using sample data</div>
+          </div>
+        `;
+
+        showMessage("Demo mode activated! Ready to analyze.", "success");
+      }
+
+      // Form validation
+      function validateForm() {
+        const requiredFields = [
+          "athleteName",
+          "athleteAge",
+          "athleteSport",
+          "athleteActivity",
+          "athleteRegion",
+        ];
+
+        for (const id of requiredFields) {
+          const field = document.getElementById(id);
+          if (!field.value.trim()) {
+            showMessage(
+              `Please fill in ${
+                field.placeholder ||
+                field.previousElementSibling?.textContent ||
+                "the required field"
+              }.`
+            );
+            field.focus();
+            return false;
+          }
+        }
+
+        // Age validation
+        const age = parseInt(document.getElementById("athleteAge").value);
+        if (age < 10 || age > 30) {
+          showMessage("Age must be between 10 and 30 years.");
+          return false;
+        }
+
+        return true;
+      }
+
+      // Main analysis function
+      analyzeBtn.addEventListener("click", startAnalysis);
+
+      async function startAnalysis() {
+        if (!validateForm()) return;
+
+        if (!isDemoMode && !selectedVideoFile) {
+          showMessage("Please upload a performance video or use demo mode.");
+          return;
+        }
+
+        setButtonState(true);
+        showLoader();
+
+        try {
+          const formData = new FormData();
+
+          // Add form data
+          formData.append(
+            "athleteName",
+            document.getElementById("athleteName").value
+          );
+          formData.append(
+            "athleteAge",
+            document.getElementById("athleteAge").value
+          );
+          formData.append(
+            "athleteSport",
+            document.getElementById("athleteSport").value
+          );
+          formData.append(
+            "athleteActivity",
+            document.getElementById("athleteActivity").value
+          );
+          formData.append(
+            "athleteRegion",
+            document.getElementById("athleteRegion").value
+          );
+          formData.append(
+            "athletePhone",
+            document.getElementById("athletePhone").value || ""
+          );
+
+          if (isDemoMode) {
+            formData.append("isDemo", "true");
+          } else if (selectedVideoFile) {
+            formData.append("videoFile", selectedVideoFile);
+          }
+
+          const response = await fetch(`${API_BASE_URL}/api/analyze`, {
+            method: "POST",
+            body: formData,
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            throw new Error(result.error || "Analysis failed");
+          }
+
+          if (result.success) {
+            displayResults(result);
+            showMessage("Analysis completed successfully!", "success");
+          } else {
+            throw new Error(result.error || "Unknown error occurred");
+          }
+        } catch (error) {
+          console.error("Analysis error:", error);
+          showMessage(`Analysis failed: ${error.message}`);
+        } finally {
+          hideLoader();
+          setButtonState(false);
+        }
+      }
+
+      function displayResults(results) {
+        // Create score cards
+        const scoreCardsContainer = document.getElementById("scoreCards");
+        scoreCardsContainer.innerHTML = `
+          <div class="score-card overall-score">
+            <div class="score-value">${results.overall_score}</div>
+            <div class="score-label">Overall</div>
+          </div>
+        `;
+
+        // Add detailed scores
+        if (results.detailed_scores) {
+          Object.entries(results.detailed_scores).forEach(([key, value]) => {
+            const formattedKey = key.charAt(0).toUpperCase() + key.slice(1);
+            scoreCardsContainer.innerHTML += `
+              <div class="score-card">
+                <div class="score-value">${Math.round(value)}</div>
+                <div class="score-label">${formattedKey}</div>
+              </div>
+            `;
+          });
+        }
+
+        // Add recommendations
+        const recommendationsContainer = document.getElementById(
+          "recommendationsList"
+        );
+        if (results.recommendations && results.recommendations.length > 0) {
+          recommendationsContainer.innerHTML = results.recommendations
+            .map(
+              (rec) => `
+              <div class="results-list-item">
+                <div class="icon-wrapper">💡</div>
+                <div class="text">${rec}</div>
+              </div>
+            `
+            )
+            .join("");
+        }
+
+        // Add injury risk if available
+        if (results.injury_risk) {
+          recommendationsContainer.innerHTML += `
+            <div class="results-list-item">
+              <div class="icon-wrapper">🛡️</div>
+              <div class="text">Injury Risk: ${results.injury_risk}</div>
+            </div>
+          `;
+        }
+
+        // Show results section
+        mainContent.style.display = "none";
+        resultsSection.style.display = "block";
+      }
+
+      // Reset functionality
+      resetBtn.addEventListener("click", () => {
+        // Hide results section, show form again
+        resultsSection.style.display = "none";
+        mainContent.style.display = "block";
+
+        // Reset form
+        document.getElementById("athleteForm").reset();
+        greetingHeader.textContent = "Hello Athlete";
+
+        // Reset file state
+        selectedVideoFile = null;
+        isDemoMode = false;
+
+        // Restore file upload card UI
+        fileUploadArea.innerHTML = `
+      <div class="card-content">
+        <button>
+          <div class="svg-wrapper-1">
+            <div class="svg-wrapper">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="30"
+                height="30"
+                class="icon"
+              >
+                <path
+                  d="M22,15.04C22,17.23 20.24,19 18.07,19H5.93C3.76,19 2,17.23 2,15.04C2,13.07 3.43,11.44 5.31,11.14C5.28,11 5.27,10.86 5.27,10.71C5.27,9.33 6.38,8.2 7.76,8.2C8.37,8.2 8.94,8.43 9.37,8.8C10.14,7.05 11.13,5.44 13.91,5.44C17.28,5.44 18.87,8.06 18.87,10.83C18.87,10.94 18.87,11.06 18.86,11.17C20.65,11.54 22,13.13 22,15.04Z"
+                ></path>
+              </svg>
+            </div>
+          </div>
+          <span>Upload</span>
+        </button>
+      </div>
+      <input type="file" id="videoFile" accept="video/*" style="display: none" />
+    `;
+
+        // Re-bind the input event since we re-created the file input
+        const newFileInput = fileUploadArea.querySelector("#videoFile");
+        newFileInput.addEventListener("change", (e) =>
+          handleFile(e.target.files[0])
+        );
+      });
+
+      function resetForm() {
+        document.getElementById("athleteForm").reset();
+        athleteNameInput.dispatchEvent(new Event("input")); // Reset greeting
+        selectedVideoFile = null;
+
+        resultsSection.style.display = "none";
+        mainContent.style.display = "block";
+
+        fileUploadArea.innerHTML = `<div class="card-icon">📹</div><div class="card-content"><div class="card-title">Upload Video</div><div class="card-subtitle">Drag & Drop</div></div>`;
+        document.getElementById("athleteActivity").innerHTML =
+          '<option value="">Select Activity</option>';
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      const sportActivities = {
+        cricket: ["Bowling", "Batting", "Fielding"],
+        football: ["Shooting", "Dribbling", "Goalkeeping"],
+        athletics: ["Running", "Jumping", "Throwing"],
+      };
+      document
+        .getElementById("athleteSport")
+        .addEventListener("change", function () {
+          const sport = this.value;
+          const activitySelect = document.getElementById("athleteActivity");
+          activitySelect.innerHTML =
+            '<option value="">Select Activity</option>';
+          if (sport && sportActivities[sport]) {
+            sportActivities[sport].forEach((activity) => {
+              const option = document.createElement("option");
+              option.value = activity.toLowerCase();
+              option.textContent = activity;
+              activitySelect.appendChild(option);
+            });
+          }
+        });
+    </script>
+  </body>
+</html>
+
