@@ -67,7 +67,7 @@
       align-items: center;
       padding: 1rem;
       color: var(--text-primary);
-      overflow: hidden;
+      /* overflow: hidden; */
     }
 
     .auth-container,
@@ -78,14 +78,17 @@
       border-radius: 40px;
       box-shadow: var(--shadow-medium);
       padding: 2.5rem 2rem;
+      z-index: 1;
     }
 
     .app-container {
       padding: 0;
-      height: 100%;
+      height: 100vh;
       max-height: 896px;
       display: flex;
       flex-direction: column;
+      z-index: 1;
+      overflow: auto;
     }
 
     .auth-form h2 {
@@ -223,6 +226,9 @@
       flex-grow: 1;
       overflow-y: auto;
       scrollbar-width: none;
+      position: relative;
+      z-index: 2;
+      background: transparent;
     }
 
     .content-area::-webkit-scrollbar {
